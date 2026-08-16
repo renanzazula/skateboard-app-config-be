@@ -34,7 +34,7 @@ public class AppConfigPersistenceAdapter implements LoadAppConfigPort, SaveAppCo
     private AppConfig toDomain(AppConfigJpaEntity e) {
         return AppConfig.reconstitute(e.getId(), e.getLoginBackgroundKey(), e.getLoginBackgroundVersion(),
                 e.getLoginBackgroundUpdatedAt(), e.getAppLogoKey(), e.getAppLogoVersion(),
-                e.getAppLogoUpdatedAt(), e.getUpdatedBy());
+                e.getAppLogoUpdatedAt(), e.getLoginTitle(), e.getLoginMessage(), e.getUpdatedBy());
     }
 
     private AppConfigJpaEntity toEntity(AppConfig config) {
@@ -51,6 +51,8 @@ public class AppConfigPersistenceAdapter implements LoadAppConfigPort, SaveAppCo
         e.setAppLogoKey(config.getAppLogoKey());
         e.setAppLogoVersion(config.getAppLogoVersion());
         e.setAppLogoUpdatedAt(config.getAppLogoUpdatedAt());
+        e.setLoginTitle(config.getLoginTitle());
+        e.setLoginMessage(config.getLoginMessage());
         e.setUpdatedBy(config.getUpdatedBy());
         e.setUpdatedAt(now);
         return e;

@@ -31,7 +31,9 @@ public class PublicConfigController implements PublicApi {
                 .loginBackgroundUpdatedAt(toOffsetDateTime(config.getLoginBackgroundUpdatedAt()))
                 .appLogoUrl(objectStoragePort.presignGetUrl(config.getAppLogoKey()))
                 .appLogoVersion(config.getAppLogoVersion())
-                .appLogoUpdatedAt(toOffsetDateTime(config.getAppLogoUpdatedAt()));
+                .appLogoUpdatedAt(toOffsetDateTime(config.getAppLogoUpdatedAt()))
+                .loginTitle(config.getLoginTitle())
+                .loginMessage(config.getLoginMessage());
         return ResponseEntity.ok(response);
     }
 

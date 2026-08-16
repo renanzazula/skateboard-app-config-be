@@ -6,6 +6,7 @@ import com.skateboard.appconfig.application.port.in.RemoveAppLogoUseCase;
 import com.skateboard.appconfig.application.port.in.RemoveBrandingAssetUseCase;
 import com.skateboard.appconfig.application.port.in.RemoveLoginBackgroundUseCase;
 import com.skateboard.appconfig.application.port.in.ReplaceBrandingAssetUseCase;
+import com.skateboard.appconfig.application.port.in.UpdateLoginTextUseCase;
 import com.skateboard.appconfig.application.port.in.UploadAppLogoUseCase;
 import com.skateboard.appconfig.application.port.in.UploadBrandingAssetUseCase;
 import com.skateboard.appconfig.application.port.in.UploadLoginBackgroundUseCase;
@@ -15,6 +16,7 @@ import com.skateboard.appconfig.domain.model.BrandingAsset;
 import com.skateboard.appconfig.infrastructure.web.api.AdminApi;
 import com.skateboard.appconfig.infrastructure.web.dto.BrandingAssetResponse;
 import com.skateboard.appconfig.infrastructure.web.dto.BrandingConfigResponse;
+import com.skateboard.appconfig.infrastructure.web.dto.UpdateLoginTextRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,6 +39,7 @@ public class BrandingAdminController implements AdminApi {
     private final ListBrandingAssetsUseCase listBrandingAssetsUseCase;
     private final UploadLoginBackgroundUseCase uploadLoginBackgroundUseCase;
     private final RemoveLoginBackgroundUseCase removeLoginBackgroundUseCase;
+    private final UpdateLoginTextUseCase updateLoginTextUseCase;
     private final UploadAppLogoUseCase uploadAppLogoUseCase;
     private final RemoveAppLogoUseCase removeAppLogoUseCase;
     private final UploadBrandingAssetUseCase uploadBrandingAssetUseCase;
@@ -48,6 +51,7 @@ public class BrandingAdminController implements AdminApi {
                                     ListBrandingAssetsUseCase listBrandingAssetsUseCase,
                                     UploadLoginBackgroundUseCase uploadLoginBackgroundUseCase,
                                     RemoveLoginBackgroundUseCase removeLoginBackgroundUseCase,
+                                    UpdateLoginTextUseCase updateLoginTextUseCase,
                                     UploadAppLogoUseCase uploadAppLogoUseCase,
                                     RemoveAppLogoUseCase removeAppLogoUseCase,
                                     UploadBrandingAssetUseCase uploadBrandingAssetUseCase,
@@ -58,6 +62,7 @@ public class BrandingAdminController implements AdminApi {
         this.listBrandingAssetsUseCase = listBrandingAssetsUseCase;
         this.uploadLoginBackgroundUseCase = uploadLoginBackgroundUseCase;
         this.removeLoginBackgroundUseCase = removeLoginBackgroundUseCase;
+        this.updateLoginTextUseCase = updateLoginTextUseCase;
         this.uploadAppLogoUseCase = uploadAppLogoUseCase;
         this.removeAppLogoUseCase = removeAppLogoUseCase;
         this.uploadBrandingAssetUseCase = uploadBrandingAssetUseCase;
@@ -87,6 +92,14 @@ public class BrandingAdminController implements AdminApi {
     public ResponseEntity<BrandingConfigResponse> removeLoginBackground() {
         AppConfig updated = removeLoginBackgroundUseCase.execute(
                 new RemoveLoginBackgroundUseCase.Command(currentAdminId()));
+        return ResponseEntity.ok(toConfigResponse(updated, listBrandingAssetsUseCase.execute()));
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('FUNC_TAB_SETTINGS_BRANDING')")
+    public ResponseEntity<BrandingConfigResponse> updateLoginText(UpdateLoginTextRequest request) {
+        AppConfig updated = updateLoginTextUseCase.execute(
+                new UpdateLoginTextUseCase.Command(currentAdminId(), request.getTitle(), request.getMessage()));
         return ResponseEntity.ok(toConfigResponse(updated, listBrandingAssetsUseCase.execute()));
     }
 
@@ -146,6 +159,8 @@ public class BrandingAdminController implements AdminApi {
                 .appLogoUrl(objectStoragePort.presignGetUrl(config.getAppLogoKey()))
                 .appLogoVersion(config.getAppLogoVersion())
                 .appLogoUpdatedAt(toOffsetDateTime(config.getAppLogoUpdatedAt()))
+                .loginTitle(config.getLoginTitle())
+                .loginMessage(config.getLoginMessage())
                 .assets(assets.stream().map(this::toAssetResponse).collect(Collectors.toList()));
     }
 

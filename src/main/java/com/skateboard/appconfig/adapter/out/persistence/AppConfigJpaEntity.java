@@ -33,6 +33,12 @@ public class AppConfigJpaEntity {
     @Column(name = "app_logo_updated_at")
     private Instant appLogoUpdatedAt;
 
+    @Column(name = "login_title")
+    private String loginTitle;
+
+    @Column(name = "login_message")
+    private String loginMessage;
+
     @Column(name = "updated_by")
     private String updatedBy;
 
@@ -51,6 +57,8 @@ public class AppConfigJpaEntity {
     public String getAppLogoKey()                { return appLogoKey; }
     public int getAppLogoVersion()               { return appLogoVersion; }
     public Instant getAppLogoUpdatedAt()         { return appLogoUpdatedAt; }
+    public String getLoginTitle()                { return loginTitle; }
+    public String getLoginMessage()              { return loginMessage; }
     public String getUpdatedBy()                 { return updatedBy; }
     public Instant getCreatedAt()                { return createdAt; }
     public Instant getUpdatedAt()                { return updatedAt; }
@@ -62,6 +70,8 @@ public class AppConfigJpaEntity {
     public void setAppLogoKey(String v)                           { this.appLogoKey = v; }
     public void setAppLogoVersion(int v)                          { this.appLogoVersion = v; }
     public void setAppLogoUpdatedAt(Instant v)                    { this.appLogoUpdatedAt = v; }
+    public void setLoginTitle(String v)                           { this.loginTitle = v; }
+    public void setLoginMessage(String v)                         { this.loginMessage = v; }
     public void setUpdatedBy(String v)                            { this.updatedBy = v; }
     public void setCreatedAt(Instant v)                           { this.createdAt = v; }
     public void setUpdatedAt(Instant v)                           { this.updatedAt = v; }

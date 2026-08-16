@@ -18,10 +18,13 @@ public class AppConfig {
     private String appLogoKey;
     private int appLogoVersion;
     private Instant appLogoUpdatedAt;
+    private String loginTitle;
+    private String loginMessage;
     private String updatedBy;
 
     private AppConfig(UUID id, String loginBackgroundKey, int loginBackgroundVersion, Instant loginBackgroundUpdatedAt,
-                       String appLogoKey, int appLogoVersion, Instant appLogoUpdatedAt, String updatedBy) {
+                       String appLogoKey, int appLogoVersion, Instant appLogoUpdatedAt,
+                       String loginTitle, String loginMessage, String updatedBy) {
         this.id = id;
         this.loginBackgroundKey = loginBackgroundKey;
         this.loginBackgroundVersion = loginBackgroundVersion;
@@ -29,18 +32,21 @@ public class AppConfig {
         this.appLogoKey = appLogoKey;
         this.appLogoVersion = appLogoVersion;
         this.appLogoUpdatedAt = appLogoUpdatedAt;
+        this.loginTitle = loginTitle;
+        this.loginMessage = loginMessage;
         this.updatedBy = updatedBy;
     }
 
     public static AppConfig createDefaults() {
-        return new AppConfig(UUID.randomUUID(), null, 0, null, null, 0, null, null);
+        return new AppConfig(UUID.randomUUID(), null, 0, null, null, 0, null, null, null, null);
     }
 
     public static AppConfig reconstitute(UUID id, String loginBackgroundKey, int loginBackgroundVersion,
                                           Instant loginBackgroundUpdatedAt, String appLogoKey, int appLogoVersion,
-                                          Instant appLogoUpdatedAt, String updatedBy) {
+                                          Instant appLogoUpdatedAt, String loginTitle, String loginMessage,
+                                          String updatedBy) {
         return new AppConfig(id, loginBackgroundKey, loginBackgroundVersion, loginBackgroundUpdatedAt,
-                appLogoKey, appLogoVersion, appLogoUpdatedAt, updatedBy);
+                appLogoKey, appLogoVersion, appLogoUpdatedAt, loginTitle, loginMessage, updatedBy);
     }
 
     public void updateLoginBackground(String key) {
@@ -67,6 +73,11 @@ public class AppConfig {
         this.appLogoUpdatedAt = Instant.now();
     }
 
+    public void updateLoginText(String title, String message) {
+        this.loginTitle = title;
+        this.loginMessage = message;
+    }
+
     public void touch(String adminId) {
         this.updatedBy = adminId;
     }
@@ -78,5 +89,7 @@ public class AppConfig {
     public String getAppLogoKey()                { return appLogoKey; }
     public int getAppLogoVersion()               { return appLogoVersion; }
     public Instant getAppLogoUpdatedAt()         { return appLogoUpdatedAt; }
+    public String getLoginTitle()                { return loginTitle; }
+    public String getLoginMessage()              { return loginMessage; }
     public String getUpdatedBy()                 { return updatedBy; }
 }
