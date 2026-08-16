@@ -1,0 +1,61 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: app-config
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/skateboard}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+
+  jpa:
+    # Flyway owns the schema (db/migration); Hibernate only validates its matches.
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: skateboard-app-config
+
+  flyway:
+    enabled: true
+    schemas: skateboard-app-config
+    create-schemas: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Keycloak realm issuer — same realm as the rest of the platform.
+          issuer-uri: ${APP_SECURITY_OAUTH2_ISSUER_URI:http://localhost:8180/realms/skateboard-podcast}
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+
+app:
+  security:
+    oauth2:
+      # Tokens must include this in their "aud" claim (see the FE client's
+      # "audience" protocol mapper in .docker/keycloak/realm-export.json).
+      audience: ${APP_SECURITY_OAUTH2_AUDIENCE:skateboard-app-config-be}
+
+# S3-compatible object storage for branding uploads (login background, app
+# logo, branding assets). Locally this points at the MinIO container from
+# skateboard-infrastructure/.docker/docker-compose.yaml; in production it
+# points at the Railway-managed bucket via the AWS_* env vars below.
+railway:
+  bucket:
+    bucket-name: ${AWS_S3_BUCKET_NAME:skateboard-branding}
+    endpoint: ${AWS_ENDPOINT_URL:http://localhost:9000}
+    access-key-id: ${AWS_ACCESS_KEY_ID:minioadmin}
+    secret-access-key: ${AWS_SECRET_ACCESS_KEY:minioadmin}
+    region: ${AWS_DEFAULT_REGION:auto}
+    presigned-url-expiration-minutes: 60
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{correlationId}] [%thread] %logger{36} - %msg%n"

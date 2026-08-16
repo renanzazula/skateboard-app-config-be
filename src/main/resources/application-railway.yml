@@ -1,0 +1,53 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: app-config
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/skateboard}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: skateboard_app_config
+
+  flyway:
+    enabled: true
+    schemas: skateboard_app_config
+    create-schemas: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${APP_SECURITY_OAUTH2_ISSUER_URI:http://localhost:8180/realms/skateboard-podcast}
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+
+app:
+  security:
+    oauth2:
+      audience: ${APP_SECURITY_OAUTH2_AUDIENCE:skateboard-app-config-be}
+
+railway:
+  bucket:
+    bucket-name: ${AWS_S3_BUCKET_NAME:skateboard-branding}
+    endpoint: ${AWS_ENDPOINT_URL}
+    access-key-id: ${AWS_ACCESS_KEY_ID}
+    secret-access-key: ${AWS_SECRET_ACCESS_KEY}
+    region: ${AWS_DEFAULT_REGION:auto}
+    presigned-url-expiration-minutes: 60
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{correlationId}] [%thread] %logger{36} - %msg%n"
