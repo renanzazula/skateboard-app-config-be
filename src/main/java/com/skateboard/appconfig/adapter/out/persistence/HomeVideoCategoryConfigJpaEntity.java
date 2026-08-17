@@ -40,7 +40,10 @@ public class HomeVideoCategoryConfigJpaEntity {
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    // Nullable — reflects the domain's "last explicit admin change" (null
+    // until updateCategories() runs), not a generic row-write audit; see
+    // HomeVideoCategoryConfigPersistenceAdapter.
+    @Column(name = "updated_at")
     private Instant updatedAt;
 
     public HomeVideoCategoryConfigJpaEntity() {}

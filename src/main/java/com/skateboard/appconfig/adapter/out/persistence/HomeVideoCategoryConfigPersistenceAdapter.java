@@ -40,15 +40,17 @@ public class HomeVideoCategoryConfigPersistenceAdapter implements LoadHomeVideoC
     private HomeVideoCategoryConfigJpaEntity toEntity(HomeVideoCategoryConfig config) {
         HomeVideoCategoryConfigJpaEntity existing = jpaRepository.findById(config.getId()).orElse(null);
         HomeVideoCategoryConfigJpaEntity e = existing != null ? existing : new HomeVideoCategoryConfigJpaEntity();
-        Instant now = Instant.now();
         if (existing == null) {
-            e.setCreatedAt(now);
+            e.setCreatedAt(Instant.now());
         }
         e.setId(config.getId());
         e.setMode(config.getMode());
         e.setEnabledCategoryIds(new LinkedHashSet<>(config.getEnabledCategoryIds()));
         e.setUpdatedBy(config.getUpdatedBy());
-        e.setUpdatedAt(now);
+        // Copies the domain's own updatedAt (null until updateCategories()
+        // runs) rather than stamping now() — the default-creation save on
+        // first GET must not look like an admin change.
+        e.setUpdatedAt(config.getUpdatedAt());
         return e;
     }
 }
