@@ -41,12 +41,26 @@ class UpdateHomeFeaturedPlayerConfigServiceTest {
 
         HomeFeaturedPlayerConfig updated = service.execute(new UpdateHomeFeaturedPlayerConfigUseCase.Command(
                 "admin-1", true, FeaturedContentSource.PODCAST, "post-1",
-                HomeFeaturedPlayerConfig.PlayerType.MINI, HomeFeaturedPlayerConfig.Position.BOTTOM));
+                HomeFeaturedPlayerConfig.PlayerType.MINI, HomeFeaturedPlayerConfig.Position.BOTTOM, null));
 
         assertThat(updated.isEnabled()).isTrue();
         assertThat(updated.getContentSource()).isEqualTo(FeaturedContentSource.PODCAST);
         assertThat(updated.getContentId()).isEqualTo("post-1");
         assertThat(updated.getUpdatedBy()).isEqualTo("admin-1");
+    }
+
+    @Test
+    void enablingWithPreferredPlatformPersistsIt() {
+        HomeFeaturedPlayerConfig config = HomeFeaturedPlayerConfig.createDefaults();
+        when(loadHomeFeaturedPlayerConfigPort.getOrCreate()).thenReturn(config);
+        when(saveHomeFeaturedPlayerConfigPort.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        HomeFeaturedPlayerConfig updated = service.execute(new UpdateHomeFeaturedPlayerConfigUseCase.Command(
+                "admin-1", true, FeaturedContentSource.PODCAST, "post-1",
+                HomeFeaturedPlayerConfig.PlayerType.MINI, HomeFeaturedPlayerConfig.Position.BOTTOM,
+                HomeFeaturedPlayerConfig.PreferredPlatform.YOUTUBE));
+
+        assertThat(updated.getPreferredPlatform()).isEqualTo(HomeFeaturedPlayerConfig.PreferredPlatform.YOUTUBE);
     }
 
     @Test
@@ -57,7 +71,7 @@ class UpdateHomeFeaturedPlayerConfigServiceTest {
 
         HomeFeaturedPlayerConfig updated = service.execute(new UpdateHomeFeaturedPlayerConfigUseCase.Command(
                 "admin-1", false, null, null,
-                HomeFeaturedPlayerConfig.PlayerType.MINI, HomeFeaturedPlayerConfig.Position.BOTTOM));
+                HomeFeaturedPlayerConfig.PlayerType.MINI, HomeFeaturedPlayerConfig.Position.BOTTOM, null));
 
         assertThat(updated.isEnabled()).isFalse();
     }
@@ -69,7 +83,7 @@ class UpdateHomeFeaturedPlayerConfigServiceTest {
 
         assertThatThrownBy(() -> service.execute(new UpdateHomeFeaturedPlayerConfigUseCase.Command(
                 "admin-1", true, null, null,
-                HomeFeaturedPlayerConfig.PlayerType.MINI, HomeFeaturedPlayerConfig.Position.BOTTOM)))
+                HomeFeaturedPlayerConfig.PlayerType.MINI, HomeFeaturedPlayerConfig.Position.BOTTOM, null)))
                 .isInstanceOf(IllegalArgumentException.class);
         verify(saveHomeFeaturedPlayerConfigPort, never()).save(any());
     }

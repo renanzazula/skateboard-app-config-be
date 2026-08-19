@@ -8,6 +8,7 @@ import com.skateboard.appconfig.infrastructure.web.api.HomeFeaturedPlayerApi;
 import com.skateboard.appconfig.infrastructure.web.dto.HomeFeaturedPlayerConfigResponse;
 import com.skateboard.appconfig.infrastructure.web.dto.HomePlayerPosition;
 import com.skateboard.appconfig.infrastructure.web.dto.HomePlayerType;
+import com.skateboard.appconfig.infrastructure.web.dto.PreferredPlaybackPlatform;
 import com.skateboard.appconfig.infrastructure.web.dto.UpdateHomeFeaturedPlayerConfigRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -53,7 +54,8 @@ public class HomeFeaturedPlayerConfigController implements HomeFeaturedPlayerApi
                         toDomainSource(request.getContentSource()),
                         request.getContentId(),
                         toDomainPlayerType(request.getPlayerType()),
-                        toDomainPosition(request.getPosition())));
+                        toDomainPosition(request.getPosition()),
+                        toDomainPreferredPlatform(request.getPreferredPlatform())));
         return ResponseEntity.ok(toResponse(updated));
     }
 
@@ -64,6 +66,7 @@ public class HomeFeaturedPlayerConfigController implements HomeFeaturedPlayerApi
                 .contentId(config.getContentId())
                 .playerType(toDtoPlayerType(config.getPlayerType()))
                 .position(toDtoPosition(config.getPosition()))
+                .preferredPlatform(toDtoPreferredPlatform(config.getPreferredPlatform()))
                 .updatedAt(toOffsetDateTime(config.getUpdatedAt()));
     }
 
@@ -89,6 +92,14 @@ public class HomeFeaturedPlayerConfigController implements HomeFeaturedPlayerApi
 
     private HomePlayerPosition toDtoPosition(HomeFeaturedPlayerConfig.Position position) {
         return HomePlayerPosition.fromValue(position.name());
+    }
+
+    private HomeFeaturedPlayerConfig.PreferredPlatform toDomainPreferredPlatform(PreferredPlaybackPlatform preferredPlatform) {
+        return preferredPlatform != null ? HomeFeaturedPlayerConfig.PreferredPlatform.valueOf(preferredPlatform.getValue()) : null;
+    }
+
+    private PreferredPlaybackPlatform toDtoPreferredPlatform(HomeFeaturedPlayerConfig.PreferredPlatform preferredPlatform) {
+        return preferredPlatform != null ? PreferredPlaybackPlatform.fromValue(preferredPlatform.name()) : null;
     }
 
     private OffsetDateTime toOffsetDateTime(Instant instant) {

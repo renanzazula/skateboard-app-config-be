@@ -24,7 +24,7 @@ public class UpdateHomeFeaturedPlayerConfigService implements UpdateHomeFeatured
     public HomeFeaturedPlayerConfig execute(Command command) {
         HomeFeaturedPlayerConfig config = loadHomeFeaturedPlayerConfigPort.getOrCreate();
         config.update(command.enabled(), command.contentSource(), command.contentId(),
-                command.playerType(), command.position());
+                command.playerType(), command.position(), command.preferredPlatform());
         config.touch(command.adminId());
         return saveHomeFeaturedPlayerConfigPort.save(config);
     }

@@ -13,6 +13,7 @@ import java.util.UUID;
 import com.skateboard.appconfig.domain.model.FeaturedContentSource;
 import com.skateboard.appconfig.domain.model.HomeFeaturedPlayerConfig.PlayerType;
 import com.skateboard.appconfig.domain.model.HomeFeaturedPlayerConfig.Position;
+import com.skateboard.appconfig.domain.model.HomeFeaturedPlayerConfig.PreferredPlatform;
 
 @Entity
 @Table(name = "home_featured_player_config")
@@ -39,6 +40,10 @@ public class HomeFeaturedPlayerConfigJpaEntity {
     @Column(name = "position", nullable = false)
     private Position position;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "preferred_platform")
+    private PreferredPlatform preferredPlatform;
+
     @Column(name = "updated_by")
     private String updatedBy;
 
@@ -60,6 +65,7 @@ public class HomeFeaturedPlayerConfigJpaEntity {
     public String getContentId()                    { return contentId; }
     public PlayerType getPlayerType()                { return playerType; }
     public Position getPosition()                    { return position; }
+    public PreferredPlatform getPreferredPlatform()  { return preferredPlatform; }
     public String getUpdatedBy()                    { return updatedBy; }
     public Instant getCreatedAt()                   { return createdAt; }
     public Instant getUpdatedAt()                   { return updatedAt; }
@@ -70,6 +76,7 @@ public class HomeFeaturedPlayerConfigJpaEntity {
     public void setContentId(String v)                            { this.contentId = v; }
     public void setPlayerType(PlayerType v)                       { this.playerType = v; }
     public void setPosition(Position v)                           { this.position = v; }
+    public void setPreferredPlatform(PreferredPlatform v)         { this.preferredPlatform = v; }
     public void setUpdatedBy(String v)                            { this.updatedBy = v; }
     public void setCreatedAt(Instant v)                           { this.createdAt = v; }
     public void setUpdatedAt(Instant v)                           { this.updatedAt = v; }

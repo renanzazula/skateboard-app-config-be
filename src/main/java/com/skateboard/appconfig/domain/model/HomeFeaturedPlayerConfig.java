@@ -17,36 +17,52 @@ public class HomeFeaturedPlayerConfig {
     public enum PlayerType { MINI }
     public enum Position { TOP, BOTTOM }
 
+    /**
+     * Which distribution platform to play when the featured content has more
+     * than one available (e.g. a podcast episode with both a Spotify and a
+     * YouTube link). {@code null} means "let the resolver decide" — today
+     * that means skateboard-ui-backend's PodcastFeaturedContentResolver
+     * preferring Spotify, falling back to YouTube. An explicit value here
+     * asks the resolver to prefer that platform instead, still falling back
+     * to whichever is actually available if the preferred one isn't.
+     */
+    public enum PreferredPlatform { SPOTIFY, YOUTUBE }
+
     private final UUID id;
     private boolean enabled;
     private FeaturedContentSource contentSource;
     private String contentId;
     private PlayerType playerType;
     private Position position;
+    private PreferredPlatform preferredPlatform;
     private Instant updatedAt;
     private String updatedBy;
 
     private HomeFeaturedPlayerConfig(UUID id, boolean enabled, FeaturedContentSource contentSource, String contentId,
-                                      PlayerType playerType, Position position, Instant updatedAt, String updatedBy) {
+                                      PlayerType playerType, Position position, PreferredPlatform preferredPlatform,
+                                      Instant updatedAt, String updatedBy) {
         this.id = id;
         this.enabled = enabled;
         this.contentSource = contentSource;
         this.contentId = contentId;
         this.playerType = playerType;
         this.position = position;
+        this.preferredPlatform = preferredPlatform;
         this.updatedAt = updatedAt;
         this.updatedBy = updatedBy;
     }
 
     public static HomeFeaturedPlayerConfig createDefaults() {
         return new HomeFeaturedPlayerConfig(UUID.randomUUID(), false, null, null,
-                PlayerType.MINI, Position.BOTTOM, null, null);
+                PlayerType.MINI, Position.BOTTOM, null, null, null);
     }
 
     public static HomeFeaturedPlayerConfig reconstitute(UUID id, boolean enabled, FeaturedContentSource contentSource,
                                                           String contentId, PlayerType playerType, Position position,
+                                                          PreferredPlatform preferredPlatform,
                                                           Instant updatedAt, String updatedBy) {
-        return new HomeFeaturedPlayerConfig(id, enabled, contentSource, contentId, playerType, position, updatedAt, updatedBy);
+        return new HomeFeaturedPlayerConfig(id, enabled, contentSource, contentId, playerType, position,
+                preferredPlatform, updatedAt, updatedBy);
     }
 
     /**
@@ -55,7 +71,7 @@ public class HomeFeaturedPlayerConfig {
      * requires a content reference.
      */
     public void update(boolean enabled, FeaturedContentSource contentSource, String contentId,
-                        PlayerType playerType, Position position) {
+                        PlayerType playerType, Position position, PreferredPlatform preferredPlatform) {
         if (enabled && (contentSource == null || contentId == null || contentId.isBlank())) {
             throw new IllegalArgumentException("contentSource and contentId are required when enabled is true");
         }
@@ -64,6 +80,7 @@ public class HomeFeaturedPlayerConfig {
         this.contentId = contentId;
         this.playerType = playerType != null ? playerType : PlayerType.MINI;
         this.position = position != null ? position : Position.BOTTOM;
+        this.preferredPlatform = preferredPlatform;
         this.updatedAt = Instant.now();
     }
 
@@ -77,6 +94,7 @@ public class HomeFeaturedPlayerConfig {
     public String getContentId()                     { return contentId; }
     public PlayerType getPlayerType()                { return playerType; }
     public Position getPosition()                    { return position; }
+    public PreferredPlatform getPreferredPlatform()  { return preferredPlatform; }
     public Instant getUpdatedAt()                    { return updatedAt; }
     public String getUpdatedBy()                     { return updatedBy; }
 }

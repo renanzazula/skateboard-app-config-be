@@ -33,7 +33,7 @@ public class HomeFeaturedPlayerConfigPersistenceAdapter implements LoadHomeFeatu
 
     private HomeFeaturedPlayerConfig toDomain(HomeFeaturedPlayerConfigJpaEntity e) {
         return HomeFeaturedPlayerConfig.reconstitute(e.getId(), e.isEnabled(), e.getContentSource(), e.getContentId(),
-                e.getPlayerType(), e.getPosition(), e.getUpdatedAt(), e.getUpdatedBy());
+                e.getPlayerType(), e.getPosition(), e.getPreferredPlatform(), e.getUpdatedAt(), e.getUpdatedBy());
     }
 
     private HomeFeaturedPlayerConfigJpaEntity toEntity(HomeFeaturedPlayerConfig config) {
@@ -48,6 +48,7 @@ public class HomeFeaturedPlayerConfigPersistenceAdapter implements LoadHomeFeatu
         e.setContentId(config.getContentId());
         e.setPlayerType(config.getPlayerType());
         e.setPosition(config.getPosition());
+        e.setPreferredPlatform(config.getPreferredPlatform());
         e.setUpdatedBy(config.getUpdatedBy());
         // Copies the domain's own updatedAt (null until update() runs)
         // rather than stamping now() — the default-creation save on first
