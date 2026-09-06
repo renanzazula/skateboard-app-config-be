@@ -2,6 +2,9 @@ package com.skateboard.appconfig.infrastructure.web;
 
 import com.skateboard.appconfig.domain.exception.BrandingAssetNameConflictException;
 import com.skateboard.appconfig.domain.exception.BrandingAssetNotFoundException;
+import com.skateboard.appconfig.domain.exception.CampaignInvalidStateTransitionException;
+import com.skateboard.appconfig.domain.exception.CampaignNotFoundException;
+import com.skateboard.appconfig.domain.exception.CampaignScreenLimitExceededException;
 import com.skateboard.appconfig.infrastructure.web.dto.ErrorResponse;
 
 import org.slf4j.Logger;
@@ -41,6 +44,24 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleBadRequest(IllegalArgumentException ex) {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    // Campaign domain exceptions — CampaignScreenNotFoundException extends
+    // CampaignNotFoundException so this one handler covers "campaign or screen
+    // not found" too.
+    @ExceptionHandler(CampaignNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCampaignNotFound(CampaignNotFoundException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(CampaignScreenLimitExceededException.class)
+    public ResponseEntity<ErrorResponse> handleCampaignScreenLimit(CampaignScreenLimitExceededException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(CampaignInvalidStateTransitionException.class)
+    public ResponseEntity<ErrorResponse> handleCampaignInvalidState(CampaignInvalidStateTransitionException ex) {
+        return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
