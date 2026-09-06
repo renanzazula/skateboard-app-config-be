@@ -1,5 +1,6 @@
 package com.skateboard.appconfig.infrastructure.web;
 
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import jakarta.servlet.FilterChain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,11 +16,17 @@ class CampaignEventRateLimitFilterTest {
 
     private CampaignEventRateLimitFilter filter;
     private FilterChain chain;
+    private SimpleMeterRegistry meterRegistry;
 
     @BeforeEach
     void setUp() {
-        filter = new CampaignEventRateLimitFilter(3, 10);
+        meterRegistry = new SimpleMeterRegistry();
+        filter = new CampaignEventRateLimitFilter(3, 10, meterRegistry);
         chain = mock(FilterChain.class);
+    }
+
+    private double count(String outcome) {
+        return meterRegistry.get("campaign.events.ratelimit").tag("outcome", outcome).counter().count();
     }
 
     private static MockHttpServletRequest eventPost(String ip) {
@@ -42,6 +49,16 @@ class CampaignEventRateLimitFilterTest {
 
         assertThat(fourth.getStatus()).isEqualTo(204);
         verify(chain, times(3)).doFilter(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    void countsAcceptedAndShedEvents() throws Exception {
+        for (int i = 0; i < 5; i++) {
+            filter.doFilter(eventPost("10.0.0.1"), new MockHttpServletResponse(), chain);
+        }
+
+        assertThat(count("accepted")).isEqualTo(3);
+        assertThat(count("shed")).isEqualTo(2);
     }
 
     @Test

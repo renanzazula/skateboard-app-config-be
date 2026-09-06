@@ -91,6 +91,15 @@ class CampaignScreenTest {
     }
 
     @Test
+    void rejectsInternalCtaRoutesTheMobileAppHasNoScreenFor() {
+        // /events and /competitions were removed from the V1 allow-list.
+        assertThatThrownBy(() -> screen(draft(3, false, null, CampaignActionType.INTERNAL, "Go", "/events")))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> screen(draft(3, false, null, CampaignActionType.INTERNAL, "Go", "/competitions/summer")))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     void rejectsAnInternalCtaWithoutATarget() {
         assertThatThrownBy(() -> screen(draft(3, false, null, CampaignActionType.INTERNAL, "Go", null)))
                 .isInstanceOf(IllegalArgumentException.class);

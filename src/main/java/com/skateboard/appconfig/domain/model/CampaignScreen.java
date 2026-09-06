@@ -23,12 +23,16 @@ public class CampaignScreen {
      * hand-synced with the Admin FE's target picker, not a dynamically fetched
      * route registry. A target is accepted if it equals one of these or sits
      * below it as a path segment (e.g. {@code /podcasts/123}).
+     * <p>
+     * Only routes the mobile app actually has: {@code /events} and
+     * {@code /competitions} were dropped for V1 — there is no such screen, so
+     * an admin could have saved a CTA the app silently ignored. Re-add them
+     * here (and in skateboard-fe's {@code INTERNAL_CTA_PREFIXES} + {@code
+     * toAppRoute}) when those features ship.
      */
     private static final List<String> ALLOWED_INTERNAL_ROUTE_PREFIXES = List.of(
             "/home",
             "/podcasts",
-            "/events",
-            "/competitions",
             "/settings/about-us");
 
     private final UUID id;

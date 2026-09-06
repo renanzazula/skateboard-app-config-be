@@ -1,5 +1,7 @@
 package com.skateboard.appconfig.infrastructure.web;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,6 +32,11 @@ import java.util.regex.Pattern;
  * the socket address. The key map is size-capped and cleared wholesale on
  * overflow — crude but bounded and self-healing, and this is best-effort
  * abuse protection, not accounting.
+ *
+ * The {@code campaign.events.ratelimit} counter (tag {@code outcome} =
+ * {@code accepted} | {@code shed}) makes it visible whether the limit is
+ * tuned right — a rising {@code shed} share means legitimate traffic is being
+ * dropped and the window needs widening. New Relic picks up Micrometer meters.
  */
 @Component
 public class CampaignEventRateLimitFilter extends OncePerRequestFilter {
@@ -42,12 +49,21 @@ public class CampaignEventRateLimitFilter extends OncePerRequestFilter {
     private final int maxRequests;
     private final long windowMs;
     private final Map<String, Deque<Long>> hits = new ConcurrentHashMap<>();
+    private final Counter acceptedCounter;
+    private final Counter shedCounter;
 
     public CampaignEventRateLimitFilter(
             @Value("${app.campaign.events.rate-limit.max-requests:40}") int maxRequests,
-            @Value("${app.campaign.events.rate-limit.window-seconds:10}") long windowSeconds) {
+            @Value("${app.campaign.events.rate-limit.window-seconds:10}") long windowSeconds,
+            MeterRegistry meterRegistry) {
         this.maxRequests = maxRequests;
         this.windowMs = windowSeconds * 1000;
+        this.acceptedCounter = Counter.builder("campaign.events.ratelimit")
+                .description("Campaign analytics events by rate-limit outcome")
+                .tag("outcome", "accepted").register(meterRegistry);
+        this.shedCounter = Counter.builder("campaign.events.ratelimit")
+                .description("Campaign analytics events by rate-limit outcome")
+                .tag("outcome", "shed").register(meterRegistry);
     }
 
     @Override
@@ -60,8 +76,10 @@ public class CampaignEventRateLimitFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         if (allow(clientKey(request))) {
+            acceptedCounter.increment();
             filterChain.doFilter(request, response);
         } else {
+            shedCounter.increment();
             log.debug("Rate-limited campaign event from {}", clientKey(request));
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
