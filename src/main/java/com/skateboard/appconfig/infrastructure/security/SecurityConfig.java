@@ -57,6 +57,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/config").permitAll()
+                        // Startup campaigns must resolve before login (ANONYMOUS/ALL
+                        // audiences); the analytics ping likewise has no auth so a
+                        // signed-out session can still report events.
+                        .requestMatchers(HttpMethod.GET, "/api/campaigns/active").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/campaigns/*/events").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(o -> o.jwt(jwt -> jwt
                         .decoder(jwtDecoder())

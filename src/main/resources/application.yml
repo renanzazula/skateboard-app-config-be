@@ -42,6 +42,18 @@ app:
       # Tokens must include this in their "aud" claim (see the FE client's
       # "audience" protocol mapper in .docker/keycloak/realm-export.json).
       audience: ${APP_SECURITY_OAUTH2_AUDIENCE:skateboard-app-config-be}
+  campaign:
+    events:
+      # POST /api/campaigns/{id}/events is anonymous and unauthenticated;
+      # CampaignEventRateLimitFilter sheds bursts past this per-client window
+      # (silently — the client still gets 204). ~40/10s comfortably covers one
+      # user's real campaign session.
+      rate-limit:
+        max-requests: ${APP_CAMPAIGN_EVENTS_RATE_LIMIT_MAX:40}
+        window-seconds: ${APP_CAMPAIGN_EVENTS_RATE_LIMIT_WINDOW_SECONDS:10}
+      # CampaignEventRetentionJob deletes rows older than this, daily.
+      retention-days: ${APP_CAMPAIGN_EVENTS_RETENTION_DAYS:90}
+      retention-cron: ${APP_CAMPAIGN_EVENTS_RETENTION_CRON:0 30 3 * * *}
 
 # S3-compatible object storage for branding uploads (login background, app
 # logo, branding assets). Locally this points at the MinIO container from
