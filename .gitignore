@@ -34,3 +34,6 @@ target/
 
 # New Relic agent, downloaded during the Railway build step (see newrelic-config/)
 newrelic/
+
+# graphify knowledge-graph output (local analysis artifact, ~4MB)
+graphify-out/
