@@ -37,8 +37,9 @@ class UploadBrandingAssetServiceTest {
     void duplicateNameIsRejected() {
         when(brandingAssetRepositoryPort.existsByName("home-header")).thenReturn(true);
 
-        assertThatThrownBy(() -> service.execute(
-                new UploadBrandingAssetUseCase.Command("admin-1", "home-header", new byte[]{1}, "image/png")))
+        UploadBrandingAssetUseCase.Command command =
+                new UploadBrandingAssetUseCase.Command("admin-1", "home-header", new byte[]{1}, "image/png");
+        assertThatThrownBy(() -> service.execute(command))
                 .isInstanceOf(BrandingAssetNameConflictException.class);
         verify(objectStoragePort, never()).put(any(), any(), any());
     }

@@ -37,6 +37,7 @@ public class AboutPageJpaEntity {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
+    // Required by JPA/Hibernate to instantiate the entity via reflection.
     public AboutPageJpaEntity() {}
 
     public UUID getId()           { return id; }

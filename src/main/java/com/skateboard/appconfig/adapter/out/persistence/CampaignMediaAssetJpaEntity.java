@@ -47,6 +47,7 @@ public class CampaignMediaAssetJpaEntity {
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
+    // Required by JPA/Hibernate to instantiate the entity via reflection.
     public CampaignMediaAssetJpaEntity() {}
 
     public UUID getId()            { return id; }

@@ -40,7 +40,8 @@ class UploadLoginBackgroundServiceTest {
     void oversizedFileIsRejected() {
         byte[] tooLarge = new byte[6 * 1024 * 1024];
 
-        assertThatThrownBy(() -> service.execute(new UploadLoginBackgroundUseCase.Command("admin-1", tooLarge, "image/png")))
+        UploadLoginBackgroundUseCase.Command command = new UploadLoginBackgroundUseCase.Command("admin-1", tooLarge, "image/png");
+        assertThatThrownBy(() -> service.execute(command))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("5 MB");
         verify(objectStoragePort, never()).put(any(), any(), any());
@@ -50,7 +51,8 @@ class UploadLoginBackgroundServiceTest {
     void unsupportedMimeTypeIsRejected() {
         byte[] data = new byte[]{1, 2, 3};
 
-        assertThatThrownBy(() -> service.execute(new UploadLoginBackgroundUseCase.Command("admin-1", data, "image/gif")))
+        UploadLoginBackgroundUseCase.Command command = new UploadLoginBackgroundUseCase.Command("admin-1", data, "image/gif");
+        assertThatThrownBy(() -> service.execute(command))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Unsupported image type");
         verify(objectStoragePort, never()).put(any(), any(), any());

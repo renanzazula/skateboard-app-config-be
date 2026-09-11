@@ -45,21 +45,24 @@ class CampaignTest {
 
     @Test
     void createRejectsABlankName() {
-        assertThatThrownBy(() -> Campaign.create(UUID.randomUUID(), "  ", null, START, END, 1,
+        UUID id = UUID.randomUUID();
+        assertThatThrownBy(() -> Campaign.create(id, "  ", null, START, END, 1,
                 CampaignAudience.ALL, CampaignFrequencyType.ALWAYS, null, "admin-1"))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void createRejectsAnEndBeforeStart() {
-        assertThatThrownBy(() -> Campaign.create(UUID.randomUUID(), "x", null, END, START, 1,
+        UUID id = UUID.randomUUID();
+        assertThatThrownBy(() -> Campaign.create(id, "x", null, END, START, 1,
                 CampaignAudience.ALL, CampaignFrequencyType.ALWAYS, null, "admin-1"))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void createRequiresMaxDisplaysPerDayWhenFrequencyIsMaxPerDay() {
-        assertThatThrownBy(() -> Campaign.create(UUID.randomUUID(), "x", null, START, END, 1,
+        UUID id = UUID.randomUUID();
+        assertThatThrownBy(() -> Campaign.create(id, "x", null, START, END, 1,
                 CampaignAudience.ALL, CampaignFrequencyType.MAX_PER_DAY, null, "admin-1"))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -94,7 +97,8 @@ class CampaignTest {
         campaign.addScreen(screenDraft(1), "a");
         campaign.addScreen(screenDraft(1), "a");
 
-        assertThatThrownBy(() -> campaign.addScreen(screenDraft(1), "a"))
+        CampaignScreenDraft fourth = screenDraft(1);
+        assertThatThrownBy(() -> campaign.addScreen(fourth, "a"))
                 .isInstanceOf(CampaignScreenLimitExceededException.class);
     }
 
@@ -103,7 +107,8 @@ class CampaignTest {
         Campaign campaign = draftCampaign();
         campaign.addScreen(screenDraft(6), "a");
 
-        assertThatThrownBy(() -> campaign.addScreen(screenDraft(5), "a"))
+        CampaignScreenDraft overflow = screenDraft(5);
+        assertThatThrownBy(() -> campaign.addScreen(overflow, "a"))
                 .isInstanceOf(CampaignScreenLimitExceededException.class);
     }
 
@@ -131,7 +136,9 @@ class CampaignTest {
         Campaign campaign = draftCampaign();
         campaign.addScreen(screenDraft(2), "a");
 
-        assertThatThrownBy(() -> campaign.updateScreen(UUID.randomUUID(), screenDraft(2), "a"))
+        UUID unknownId = UUID.randomUUID();
+        CampaignScreenDraft draft = screenDraft(2);
+        assertThatThrownBy(() -> campaign.updateScreen(unknownId, draft, "a"))
                 .isInstanceOf(CampaignScreenNotFoundException.class)
                 .isInstanceOf(CampaignNotFoundException.class);
     }
@@ -142,7 +149,9 @@ class CampaignTest {
         campaign.addScreen(screenDraft(4), "a");
         CampaignScreen second = campaign.addScreen(screenDraft(4), "a");
 
-        assertThatThrownBy(() -> campaign.updateScreen(second.getId(), screenDraft(7), "a"))
+        UUID secondId = second.getId();
+        CampaignScreenDraft overflow = screenDraft(7);
+        assertThatThrownBy(() -> campaign.updateScreen(secondId, overflow, "a"))
                 .isInstanceOf(CampaignScreenLimitExceededException.class);
     }
 
@@ -164,7 +173,8 @@ class CampaignTest {
     void removeScreenRejectsAnUnknownScreenId() {
         Campaign campaign = draftCampaign();
 
-        assertThatThrownBy(() -> campaign.removeScreen(UUID.randomUUID(), "a"))
+        UUID unknownId = UUID.randomUUID();
+        assertThatThrownBy(() -> campaign.removeScreen(unknownId, "a"))
                 .isInstanceOf(CampaignScreenNotFoundException.class);
     }
 
@@ -189,7 +199,8 @@ class CampaignTest {
         CampaignScreen a = campaign.addScreen(screenDraft(1), "x");
         campaign.addScreen(screenDraft(1), "x");
 
-        assertThatThrownBy(() -> campaign.reorderScreens(List.of(a.getId(), UUID.randomUUID()), "x"))
+        List<UUID> notAPermutation = List.of(a.getId(), UUID.randomUUID());
+        assertThatThrownBy(() -> campaign.reorderScreens(notAPermutation, "x"))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -315,7 +326,8 @@ class CampaignTest {
         Campaign campaign = draftCampaign();
         campaign.archive("a");
 
-        assertThatThrownBy(() -> campaign.addScreen(screenDraft(2), "a"))
+        CampaignScreenDraft draft = screenDraft(2);
+        assertThatThrownBy(() -> campaign.addScreen(draft, "a"))
                 .isInstanceOf(CampaignInvalidStateTransitionException.class);
     }
 

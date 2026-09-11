@@ -66,7 +66,8 @@ class DeleteCampaignServiceTest {
         campaign.publish("a");
         when(campaignRepositoryPort.findById(campaign.getId())).thenReturn(Optional.of(campaign));
 
-        assertThatThrownBy(() -> service.execute(campaign.getId()))
+        UUID id = campaign.getId();
+        assertThatThrownBy(() -> service.execute(id))
                 .isInstanceOf(CampaignInvalidStateTransitionException.class);
         verify(campaignRepositoryPort, never()).deleteById(any());
     }

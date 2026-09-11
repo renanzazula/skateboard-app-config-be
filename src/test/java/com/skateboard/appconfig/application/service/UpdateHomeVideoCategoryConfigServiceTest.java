@@ -67,8 +67,9 @@ class UpdateHomeVideoCategoryConfigServiceTest {
         HomeVideoCategoryConfig config = HomeVideoCategoryConfig.createDefaults();
         when(loadHomeVideoCategoryConfigPort.getOrCreate()).thenReturn(config);
 
-        assertThatThrownBy(() -> service.execute(
-                new UpdateHomeVideoCategoryConfigUseCase.Command("admin-1", HomeVideoCategoryConfig.Mode.SELECTED, Set.of())))
+        UpdateHomeVideoCategoryConfigUseCase.Command command =
+                new UpdateHomeVideoCategoryConfigUseCase.Command("admin-1", HomeVideoCategoryConfig.Mode.SELECTED, Set.of());
+        assertThatThrownBy(() -> service.execute(command))
                 .isInstanceOf(IllegalArgumentException.class);
         verify(saveHomeVideoCategoryConfigPort, never()).save(any());
     }

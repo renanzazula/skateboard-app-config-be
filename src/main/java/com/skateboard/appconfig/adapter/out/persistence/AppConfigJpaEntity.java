@@ -48,6 +48,7 @@ public class AppConfigJpaEntity {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
+    // Required by JPA/Hibernate to instantiate the entity via reflection.
     public AppConfigJpaEntity() {}
 
     public UUID getId()                          { return id; }

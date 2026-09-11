@@ -71,8 +71,9 @@ class SaveAboutPageServiceTest {
     void rejectsABlankTitle() {
         when(loadAboutPagePort.find()).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> service.execute(new SaveAboutPageUseCase.Command(
-                "admin-1", "   ", null, AboutPage.Status.DRAFT, List.of())))
+        SaveAboutPageUseCase.Command command = new SaveAboutPageUseCase.Command(
+                "admin-1", "   ", null, AboutPage.Status.DRAFT, List.of());
+        assertThatThrownBy(() -> service.execute(command))
                 .isInstanceOf(IllegalArgumentException.class);
         verify(saveAboutPagePort, never()).save(any());
     }

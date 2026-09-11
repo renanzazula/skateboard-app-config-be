@@ -75,12 +75,15 @@ public class CampaignEventRateLimitFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        if (allow(clientKey(request))) {
+        String key = clientKey(request);
+        if (allow(key)) {
             acceptedCounter.increment();
             filterChain.doFilter(request, response);
         } else {
             shedCounter.increment();
-            log.debug("Rate-limited campaign event from {}", clientKey(request));
+            if (log.isDebugEnabled()) {
+                log.debug("Rate-limited campaign event from {}", key);
+            }
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
     }

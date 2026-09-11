@@ -57,8 +57,9 @@ class RemoveCampaignScreenServiceTest {
         Campaign campaign = campaignWithOneScreen();
         when(campaignRepositoryPort.findById(campaign.getId())).thenReturn(Optional.of(campaign));
 
-        assertThatThrownBy(() -> service.execute(
-                new RemoveCampaignScreenUseCase.Command("a", campaign.getId(), UUID.randomUUID())))
+        RemoveCampaignScreenUseCase.Command command =
+                new RemoveCampaignScreenUseCase.Command("a", campaign.getId(), UUID.randomUUID());
+        assertThatThrownBy(() -> service.execute(command))
                 .isInstanceOf(CampaignScreenNotFoundException.class);
         verify(campaignRepositoryPort, never()).save(any());
     }

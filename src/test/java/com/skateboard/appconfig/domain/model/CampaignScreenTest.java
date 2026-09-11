@@ -33,9 +33,11 @@ class CampaignScreenTest {
 
     @Test
     void rejectsNonPositiveDuration() {
-        assertThatThrownBy(() -> screen(draft(0, false, null, CampaignActionType.NONE, null, null)))
+        CampaignScreenDraft zeroDuration = draft(0, false, null, CampaignActionType.NONE, null, null);
+        assertThatThrownBy(() -> screen(zeroDuration))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> screen(draft(null, false, null, CampaignActionType.NONE, null, null)))
+        CampaignScreenDraft nullDuration = draft(null, false, null, CampaignActionType.NONE, null, null);
+        assertThatThrownBy(() -> screen(nullDuration))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -60,13 +62,15 @@ class CampaignScreenTest {
 
     @Test
     void rejectsCloseAfterSecondsNotLessThanDuration() {
-        assertThatThrownBy(() -> screen(draft(3, true, 3, CampaignActionType.NONE, null, null)))
+        CampaignScreenDraft d = draft(3, true, 3, CampaignActionType.NONE, null, null);
+        assertThatThrownBy(() -> screen(d))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void rejectsNegativeCloseAfterSeconds() {
-        assertThatThrownBy(() -> screen(draft(3, true, -1, CampaignActionType.NONE, null, null)))
+        CampaignScreenDraft d = draft(3, true, -1, CampaignActionType.NONE, null, null);
+        assertThatThrownBy(() -> screen(d))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -86,28 +90,33 @@ class CampaignScreenTest {
 
     @Test
     void rejectsAnUnsupportedInternalCtaRoute() {
-        assertThatThrownBy(() -> screen(draft(3, false, null, CampaignActionType.INTERNAL, "Go", "/admin/secrets")))
+        CampaignScreenDraft d = draft(3, false, null, CampaignActionType.INTERNAL, "Go", "/admin/secrets");
+        assertThatThrownBy(() -> screen(d))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void rejectsInternalCtaRoutesTheMobileAppHasNoScreenFor() {
         // /events and /competitions were removed from the V1 allow-list.
-        assertThatThrownBy(() -> screen(draft(3, false, null, CampaignActionType.INTERNAL, "Go", "/events")))
+        CampaignScreenDraft events = draft(3, false, null, CampaignActionType.INTERNAL, "Go", "/events");
+        assertThatThrownBy(() -> screen(events))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> screen(draft(3, false, null, CampaignActionType.INTERNAL, "Go", "/competitions/summer")))
+        CampaignScreenDraft competitions = draft(3, false, null, CampaignActionType.INTERNAL, "Go", "/competitions/summer");
+        assertThatThrownBy(() -> screen(competitions))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void rejectsAnInternalCtaWithoutATarget() {
-        assertThatThrownBy(() -> screen(draft(3, false, null, CampaignActionType.INTERNAL, "Go", null)))
+        CampaignScreenDraft d = draft(3, false, null, CampaignActionType.INTERNAL, "Go", null);
+        assertThatThrownBy(() -> screen(d))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void rejectsACtaWithoutALabel() {
-        assertThatThrownBy(() -> screen(draft(3, false, null, CampaignActionType.INTERNAL, null, "/home")))
+        CampaignScreenDraft d = draft(3, false, null, CampaignActionType.INTERNAL, null, "/home");
+        assertThatThrownBy(() -> screen(d))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -119,9 +128,11 @@ class CampaignScreenTest {
 
     @Test
     void rejectsANonUrlExternalCta() {
-        assertThatThrownBy(() -> screen(draft(3, false, null, CampaignActionType.EXTERNAL, "Visit", "just some text")))
+        CampaignScreenDraft notAUrl = draft(3, false, null, CampaignActionType.EXTERNAL, "Visit", "just some text");
+        assertThatThrownBy(() -> screen(notAUrl))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> screen(draft(3, false, null, CampaignActionType.EXTERNAL, "Visit", "/relative/path")))
+        CampaignScreenDraft relativePath = draft(3, false, null, CampaignActionType.EXTERNAL, "Visit", "/relative/path");
+        assertThatThrownBy(() -> screen(relativePath))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
