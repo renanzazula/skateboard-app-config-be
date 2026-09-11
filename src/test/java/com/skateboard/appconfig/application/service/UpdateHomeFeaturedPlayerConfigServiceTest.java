@@ -41,11 +41,13 @@ class UpdateHomeFeaturedPlayerConfigServiceTest {
 
         HomeFeaturedPlayerConfig updated = service.execute(new UpdateHomeFeaturedPlayerConfigUseCase.Command(
                 "admin-1", true, FeaturedContentSource.PODCAST, "post-1",
-                HomeFeaturedPlayerConfig.PlayerType.MINI, HomeFeaturedPlayerConfig.Position.BOTTOM, null));
+                HomeFeaturedPlayerConfig.PlayerType.MINI, HomeFeaturedPlayerConfig.Position.BOTTOM, null,
+                HomeFeaturedPlayerConfig.SelectionMode.MANUAL));
 
         assertThat(updated.isEnabled()).isTrue();
         assertThat(updated.getContentSource()).isEqualTo(FeaturedContentSource.PODCAST);
         assertThat(updated.getContentId()).isEqualTo("post-1");
+        assertThat(updated.getSelectionMode()).isEqualTo(HomeFeaturedPlayerConfig.SelectionMode.MANUAL);
         assertThat(updated.getUpdatedBy()).isEqualTo("admin-1");
     }
 
@@ -58,7 +60,7 @@ class UpdateHomeFeaturedPlayerConfigServiceTest {
         HomeFeaturedPlayerConfig updated = service.execute(new UpdateHomeFeaturedPlayerConfigUseCase.Command(
                 "admin-1", true, FeaturedContentSource.PODCAST, "post-1",
                 HomeFeaturedPlayerConfig.PlayerType.MINI, HomeFeaturedPlayerConfig.Position.BOTTOM,
-                HomeFeaturedPlayerConfig.PreferredPlatform.YOUTUBE));
+                HomeFeaturedPlayerConfig.PreferredPlatform.YOUTUBE, HomeFeaturedPlayerConfig.SelectionMode.MANUAL));
 
         assertThat(updated.getPreferredPlatform()).isEqualTo(HomeFeaturedPlayerConfig.PreferredPlatform.YOUTUBE);
     }
@@ -71,7 +73,8 @@ class UpdateHomeFeaturedPlayerConfigServiceTest {
 
         HomeFeaturedPlayerConfig updated = service.execute(new UpdateHomeFeaturedPlayerConfigUseCase.Command(
                 "admin-1", false, null, null,
-                HomeFeaturedPlayerConfig.PlayerType.MINI, HomeFeaturedPlayerConfig.Position.BOTTOM, null));
+                HomeFeaturedPlayerConfig.PlayerType.MINI, HomeFeaturedPlayerConfig.Position.BOTTOM, null,
+                HomeFeaturedPlayerConfig.SelectionMode.MANUAL));
 
         assertThat(updated.isEnabled()).isFalse();
     }
@@ -83,8 +86,68 @@ class UpdateHomeFeaturedPlayerConfigServiceTest {
 
         assertThatThrownBy(() -> service.execute(new UpdateHomeFeaturedPlayerConfigUseCase.Command(
                 "admin-1", true, null, null,
-                HomeFeaturedPlayerConfig.PlayerType.MINI, HomeFeaturedPlayerConfig.Position.BOTTOM, null)))
+                HomeFeaturedPlayerConfig.PlayerType.MINI, HomeFeaturedPlayerConfig.Position.BOTTOM, null,
+                HomeFeaturedPlayerConfig.SelectionMode.MANUAL)))
                 .isInstanceOf(IllegalArgumentException.class);
         verify(saveHomeFeaturedPlayerConfigPort, never()).save(any());
+    }
+
+    @Test
+    void enablingAutoWithoutContentIdSucceeds() {
+        HomeFeaturedPlayerConfig config = HomeFeaturedPlayerConfig.createDefaults();
+        when(loadHomeFeaturedPlayerConfigPort.getOrCreate()).thenReturn(config);
+        when(saveHomeFeaturedPlayerConfigPort.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        HomeFeaturedPlayerConfig updated = service.execute(new UpdateHomeFeaturedPlayerConfigUseCase.Command(
+                "admin-1", true, FeaturedContentSource.PODCAST, null,
+                HomeFeaturedPlayerConfig.PlayerType.MINI, HomeFeaturedPlayerConfig.Position.TOP, null,
+                HomeFeaturedPlayerConfig.SelectionMode.AUTO));
+
+        assertThat(updated.isEnabled()).isTrue();
+        assertThat(updated.getSelectionMode()).isEqualTo(HomeFeaturedPlayerConfig.SelectionMode.AUTO);
+        assertThat(updated.getContentId()).isNull();
+    }
+
+    @Test
+    void switchingToAutoClearsAPreviouslyPickedContentId() {
+        HomeFeaturedPlayerConfig config = HomeFeaturedPlayerConfig.createDefaults();
+        when(loadHomeFeaturedPlayerConfigPort.getOrCreate()).thenReturn(config);
+        when(saveHomeFeaturedPlayerConfigPort.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        // A caller sending a stale/leftover contentId alongside AUTO must not
+        // have it persisted — AUTO is pure policy, resolved elsewhere.
+        HomeFeaturedPlayerConfig updated = service.execute(new UpdateHomeFeaturedPlayerConfigUseCase.Command(
+                "admin-1", true, FeaturedContentSource.PODCAST, "post-1",
+                HomeFeaturedPlayerConfig.PlayerType.MINI, HomeFeaturedPlayerConfig.Position.TOP, null,
+                HomeFeaturedPlayerConfig.SelectionMode.AUTO));
+
+        assertThat(updated.getContentId()).isNull();
+    }
+
+    @Test
+    void enablingAutoWithoutContentSourceIsRejected() {
+        HomeFeaturedPlayerConfig config = HomeFeaturedPlayerConfig.createDefaults();
+        when(loadHomeFeaturedPlayerConfigPort.getOrCreate()).thenReturn(config);
+
+        assertThatThrownBy(() -> service.execute(new UpdateHomeFeaturedPlayerConfigUseCase.Command(
+                "admin-1", true, null, null,
+                HomeFeaturedPlayerConfig.PlayerType.MINI, HomeFeaturedPlayerConfig.Position.TOP, null,
+                HomeFeaturedPlayerConfig.SelectionMode.AUTO)))
+                .isInstanceOf(IllegalArgumentException.class);
+        verify(saveHomeFeaturedPlayerConfigPort, never()).save(any());
+    }
+
+    @Test
+    void omittedSelectionModeDefaultsToManual() {
+        HomeFeaturedPlayerConfig config = HomeFeaturedPlayerConfig.createDefaults();
+        when(loadHomeFeaturedPlayerConfigPort.getOrCreate()).thenReturn(config);
+        when(saveHomeFeaturedPlayerConfigPort.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        HomeFeaturedPlayerConfig updated = service.execute(new UpdateHomeFeaturedPlayerConfigUseCase.Command(
+                "admin-1", true, FeaturedContentSource.PODCAST, "post-1",
+                HomeFeaturedPlayerConfig.PlayerType.MINI, HomeFeaturedPlayerConfig.Position.BOTTOM, null, null));
+
+        assertThat(updated.getSelectionMode()).isEqualTo(HomeFeaturedPlayerConfig.SelectionMode.MANUAL);
+        assertThat(updated.getContentId()).isEqualTo("post-1");
     }
 }

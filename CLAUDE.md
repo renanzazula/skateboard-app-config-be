@@ -19,6 +19,37 @@ Place in the system: `skateboard-fe` (mobile) → `skateboard-ui-backend` (BFF)
 has no reason to — it's purely a config/branding source of truth that the BFF
 proxies to.
 
+### Featured Player: `selectionMode` (MANUAL / AUTO)
+
+`HomeFeaturedPlayerConfig.selectionMode` (`V9__home_featured_player_selection_mode.sql`,
+`NOT NULL DEFAULT 'MANUAL'` — existing rows backfill to MANUAL, so no live
+configuration changes behavior) is a **policy flag only**:
+
+- **MANUAL** (default, and the only mode that existed before this field): an
+  admin explicitly picks `contentSource`/`contentId`, exactly as before.
+- **AUTO**: this service stores no concrete selection at all — `update()`
+  forces `contentId` to `null` whenever `selectionMode == AUTO`, even if a
+  caller sends one. There is nothing here to resolve *to* — this service
+  doesn't own posts and, per the note above, never calls the service that
+  does. `skateboard-ui-backend` is the one that resolves AUTO's actual
+  episode, live, on every Home read (it asks skateboard-podcast-be for the
+  latest post matching the official episode title pattern). This service
+  only decides whether AUTO is turned on.
+
+`contentSource` is still required in both modes when `enabled` — it's what
+tells the BFF which resolver family to dispatch to. Only `contentId` is
+mode-dependent.
+
+`createDefaults()` (a brand-new singleton row, before any admin has ever
+configured one) now returns `position = TOP`, `preferredPlatform = YOUTUBE`,
+`selectionMode = MANUAL` — the ticket's requested defaults for a *new*
+configuration. An existing row keeps whatever it already had; this only
+affects the very first row ever created.
+
+A `selectionMode` of `null` (a pre-migration row read through code that
+predates this field, or an update request that omits it) is always treated
+as `MANUAL`, never `AUTO` — see `HomeFeaturedPlayerConfig.reconstitute`/`update`.
+
 ## Tech stack
 
 - Java 21, Spring Boot 3.4.4 (Spring Web, Spring Data JPA, Spring Security
