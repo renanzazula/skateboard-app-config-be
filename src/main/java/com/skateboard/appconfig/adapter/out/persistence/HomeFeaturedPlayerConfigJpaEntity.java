@@ -14,6 +14,7 @@ import com.skateboard.appconfig.domain.model.FeaturedContentSource;
 import com.skateboard.appconfig.domain.model.HomeFeaturedPlayerConfig.PlayerType;
 import com.skateboard.appconfig.domain.model.HomeFeaturedPlayerConfig.Position;
 import com.skateboard.appconfig.domain.model.HomeFeaturedPlayerConfig.PreferredPlatform;
+import com.skateboard.appconfig.domain.model.HomeFeaturedPlayerConfig.SelectionMode;
 
 @Entity
 @Table(name = "home_featured_player_config")
@@ -44,6 +45,10 @@ public class HomeFeaturedPlayerConfigJpaEntity {
     @Column(name = "preferred_platform")
     private PreferredPlatform preferredPlatform;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "selection_mode", nullable = false)
+    private SelectionMode selectionMode;
+
     @Column(name = "updated_by")
     private String updatedBy;
 
@@ -66,6 +71,7 @@ public class HomeFeaturedPlayerConfigJpaEntity {
     public PlayerType getPlayerType()                { return playerType; }
     public Position getPosition()                    { return position; }
     public PreferredPlatform getPreferredPlatform()  { return preferredPlatform; }
+    public SelectionMode getSelectionMode()         { return selectionMode; }
     public String getUpdatedBy()                    { return updatedBy; }
     public Instant getCreatedAt()                   { return createdAt; }
     public Instant getUpdatedAt()                   { return updatedAt; }
@@ -77,6 +83,7 @@ public class HomeFeaturedPlayerConfigJpaEntity {
     public void setPlayerType(PlayerType v)                       { this.playerType = v; }
     public void setPosition(Position v)                           { this.position = v; }
     public void setPreferredPlatform(PreferredPlatform v)         { this.preferredPlatform = v; }
+    public void setSelectionMode(SelectionMode v)                 { this.selectionMode = v; }
     public void setUpdatedBy(String v)                            { this.updatedBy = v; }
     public void setCreatedAt(Instant v)                           { this.createdAt = v; }
     public void setUpdatedAt(Instant v)                           { this.updatedAt = v; }

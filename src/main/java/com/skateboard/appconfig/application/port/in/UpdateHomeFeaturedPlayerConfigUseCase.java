@@ -7,7 +7,8 @@ public interface UpdateHomeFeaturedPlayerConfigUseCase {
 
     record Command(String adminId, boolean enabled, FeaturedContentSource contentSource, String contentId,
                     HomeFeaturedPlayerConfig.PlayerType playerType, HomeFeaturedPlayerConfig.Position position,
-                    HomeFeaturedPlayerConfig.PreferredPlatform preferredPlatform) {}
+                    HomeFeaturedPlayerConfig.PreferredPlatform preferredPlatform,
+                    HomeFeaturedPlayerConfig.SelectionMode selectionMode) {}
 
     HomeFeaturedPlayerConfig execute(Command command);
 }

@@ -28,6 +28,18 @@ public class HomeFeaturedPlayerConfig {
      */
     public enum PreferredPlatform { SPOTIFY, YOUTUBE }
 
+    /**
+     * How the featured content is chosen. {@code MANUAL} (the default, and
+     * the only mode that existed before this field) keeps {@code contentId}
+     * as an explicit admin pick that YouTube sync / any other automation must
+     * never touch. {@code AUTO} means this service stores no concrete
+     * selection at all — {@code contentId} is always {@code null} under
+     * AUTO — and the consumer (skateboard-ui-backend) resolves the latest
+     * eligible episode itself at read time. This service never talks to the
+     * content-owning services, so it cannot and does not do that resolution.
+     */
+    public enum SelectionMode { MANUAL, AUTO }
+
     private final UUID id;
     private boolean enabled;
     private FeaturedContentSource contentSource;
@@ -35,12 +47,13 @@ public class HomeFeaturedPlayerConfig {
     private PlayerType playerType;
     private Position position;
     private PreferredPlatform preferredPlatform;
+    private SelectionMode selectionMode;
     private Instant updatedAt;
     private String updatedBy;
 
     private HomeFeaturedPlayerConfig(UUID id, boolean enabled, FeaturedContentSource contentSource, String contentId,
                                       PlayerType playerType, Position position, PreferredPlatform preferredPlatform,
-                                      Instant updatedAt, String updatedBy) {
+                                      SelectionMode selectionMode, Instant updatedAt, String updatedBy) {
         this.id = id;
         this.enabled = enabled;
         this.contentSource = contentSource;
@@ -48,39 +61,58 @@ public class HomeFeaturedPlayerConfig {
         this.playerType = playerType;
         this.position = position;
         this.preferredPlatform = preferredPlatform;
+        this.selectionMode = selectionMode;
         this.updatedAt = updatedAt;
         this.updatedBy = updatedBy;
     }
 
+    /**
+     * Defaults for a brand-new singleton row only (first-ever GET before any
+     * admin has configured anything). Position TOP, preferredPlatform
+     * YOUTUBE and selectionMode MANUAL are the defaults for a *new*
+     * configuration; existing rows keep whatever they already had, via
+     * {@link #reconstitute} and the V9 migration's backfill to MANUAL.
+     */
     public static HomeFeaturedPlayerConfig createDefaults() {
         return new HomeFeaturedPlayerConfig(UUID.randomUUID(), false, null, null,
-                PlayerType.MINI, Position.BOTTOM, null, null, null);
+                PlayerType.MINI, Position.TOP, PreferredPlatform.YOUTUBE, SelectionMode.MANUAL, null, null);
     }
 
     public static HomeFeaturedPlayerConfig reconstitute(UUID id, boolean enabled, FeaturedContentSource contentSource,
                                                           String contentId, PlayerType playerType, Position position,
-                                                          PreferredPlatform preferredPlatform,
+                                                          PreferredPlatform preferredPlatform, SelectionMode selectionMode,
                                                           Instant updatedAt, String updatedBy) {
         return new HomeFeaturedPlayerConfig(id, enabled, contentSource, contentId, playerType, position,
-                preferredPlatform, updatedAt, updatedBy);
+                preferredPlatform, selectionMode != null ? selectionMode : SelectionMode.MANUAL, updatedAt, updatedBy);
     }
 
     /**
      * Disabling does not clear the previously selected content — an admin
      * toggling the player off and back on keeps their selection. Enabling
-     * requires a content reference.
+     * requires a content source in both modes (so a consumer knows which
+     * resolver family to use), plus a concrete contentId for MANUAL only.
+     *
+     * <p>AUTO never persists a real contentId — the actual episode is
+     * resolved by the consumer at read time — so switching to (or staying
+     * in) AUTO always clears it here, even if the caller passed one in.
      */
     public void update(boolean enabled, FeaturedContentSource contentSource, String contentId,
-                        PlayerType playerType, Position position, PreferredPlatform preferredPlatform) {
-        if (enabled && (contentSource == null || contentId == null || contentId.isBlank())) {
-            throw new IllegalArgumentException("contentSource and contentId are required when enabled is true");
+                        PlayerType playerType, Position position, PreferredPlatform preferredPlatform,
+                        SelectionMode selectionMode) {
+        SelectionMode mode = selectionMode != null ? selectionMode : SelectionMode.MANUAL;
+        if (enabled && contentSource == null) {
+            throw new IllegalArgumentException("contentSource is required when enabled is true");
+        }
+        if (enabled && mode == SelectionMode.MANUAL && (contentId == null || contentId.isBlank())) {
+            throw new IllegalArgumentException("contentId is required when enabled is true and selectionMode is MANUAL");
         }
         this.enabled = enabled;
         this.contentSource = contentSource;
-        this.contentId = contentId;
+        this.contentId = mode == SelectionMode.AUTO ? null : contentId;
         this.playerType = playerType != null ? playerType : PlayerType.MINI;
         this.position = position != null ? position : Position.BOTTOM;
         this.preferredPlatform = preferredPlatform;
+        this.selectionMode = mode;
         this.updatedAt = Instant.now();
     }
 
@@ -95,6 +127,7 @@ public class HomeFeaturedPlayerConfig {
     public PlayerType getPlayerType()                { return playerType; }
     public Position getPosition()                    { return position; }
     public PreferredPlatform getPreferredPlatform()  { return preferredPlatform; }
+    public SelectionMode getSelectionMode()          { return selectionMode; }
     public Instant getUpdatedAt()                    { return updatedAt; }
     public String getUpdatedBy()                     { return updatedBy; }
 }

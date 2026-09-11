@@ -8,6 +8,7 @@ import com.skateboard.appconfig.infrastructure.web.api.HomeFeaturedPlayerApi;
 import com.skateboard.appconfig.infrastructure.web.dto.HomeFeaturedPlayerConfigResponse;
 import com.skateboard.appconfig.infrastructure.web.dto.HomePlayerPosition;
 import com.skateboard.appconfig.infrastructure.web.dto.HomePlayerType;
+import com.skateboard.appconfig.infrastructure.web.dto.HomeSelectionMode;
 import com.skateboard.appconfig.infrastructure.web.dto.PreferredPlaybackPlatform;
 import com.skateboard.appconfig.infrastructure.web.dto.UpdateHomeFeaturedPlayerConfigRequest;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +56,8 @@ public class HomeFeaturedPlayerConfigController implements HomeFeaturedPlayerApi
                         request.getContentId(),
                         toDomainPlayerType(request.getPlayerType()),
                         toDomainPosition(request.getPosition()),
-                        toDomainPreferredPlatform(request.getPreferredPlatform())));
+                        toDomainPreferredPlatform(request.getPreferredPlatform()),
+                        toDomainSelectionMode(request.getSelectionMode())));
         return ResponseEntity.ok(toResponse(updated));
     }
 
@@ -67,6 +69,7 @@ public class HomeFeaturedPlayerConfigController implements HomeFeaturedPlayerApi
                 .playerType(toDtoPlayerType(config.getPlayerType()))
                 .position(toDtoPosition(config.getPosition()))
                 .preferredPlatform(toDtoPreferredPlatform(config.getPreferredPlatform()))
+                .selectionMode(toDtoSelectionMode(config.getSelectionMode()))
                 .updatedAt(toOffsetDateTime(config.getUpdatedAt()));
     }
 
@@ -100,6 +103,14 @@ public class HomeFeaturedPlayerConfigController implements HomeFeaturedPlayerApi
 
     private PreferredPlaybackPlatform toDtoPreferredPlatform(HomeFeaturedPlayerConfig.PreferredPlatform preferredPlatform) {
         return preferredPlatform != null ? PreferredPlaybackPlatform.fromValue(preferredPlatform.name()) : null;
+    }
+
+    private HomeFeaturedPlayerConfig.SelectionMode toDomainSelectionMode(HomeSelectionMode selectionMode) {
+        return selectionMode != null ? HomeFeaturedPlayerConfig.SelectionMode.valueOf(selectionMode.getValue()) : null;
+    }
+
+    private HomeSelectionMode toDtoSelectionMode(HomeFeaturedPlayerConfig.SelectionMode selectionMode) {
+        return selectionMode != null ? HomeSelectionMode.fromValue(selectionMode.name()) : null;
     }
 
     private OffsetDateTime toOffsetDateTime(Instant instant) {

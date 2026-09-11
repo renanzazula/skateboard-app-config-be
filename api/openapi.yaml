@@ -1609,6 +1609,16 @@ components:
         platform is actually available if the preferred one isn't.
       enum: [SPOTIFY, YOUTUBE]
 
+    HomeSelectionMode:
+      type: string
+      description: >-
+        How the featured content is chosen. MANUAL (default) keeps today's
+        behavior: an admin picks contentId explicitly and YouTube sync never
+        touches it. AUTO means this service stores no concrete contentId —
+        it is always null under AUTO — and the consumer resolves the latest
+        eligible episode itself at read time.
+      enum: [MANUAL, AUTO]
+
     HomeFeaturedPlayerConfigResponse:
       type: object
       properties:
@@ -1629,6 +1639,8 @@ components:
           allOf:
             - $ref: '#/components/schemas/PreferredPlaybackPlatform'
           nullable: true
+        selectionMode:
+          $ref: '#/components/schemas/HomeSelectionMode'
         updatedAt:
           type: string
           format: date-time
@@ -1654,6 +1666,10 @@ components:
         preferredPlatform:
           allOf:
             - $ref: '#/components/schemas/PreferredPlaybackPlatform'
+          nullable: true
+        selectionMode:
+          allOf:
+            - $ref: '#/components/schemas/HomeSelectionMode'
           nullable: true
 
     CampaignStatus:

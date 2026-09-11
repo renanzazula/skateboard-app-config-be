@@ -34,6 +34,8 @@ class GetHomeFeaturedPlayerConfigServiceTest {
         assertThat(result.getContentSource()).isNull();
         assertThat(result.getContentId()).isNull();
         assertThat(result.getPlayerType()).isEqualTo(HomeFeaturedPlayerConfig.PlayerType.MINI);
-        assertThat(result.getPosition()).isEqualTo(HomeFeaturedPlayerConfig.Position.BOTTOM);
+        assertThat(result.getPosition()).isEqualTo(HomeFeaturedPlayerConfig.Position.TOP);
+        assertThat(result.getPreferredPlatform()).isEqualTo(HomeFeaturedPlayerConfig.PreferredPlatform.YOUTUBE);
+        assertThat(result.getSelectionMode()).isEqualTo(HomeFeaturedPlayerConfig.SelectionMode.MANUAL);
     }
 }
