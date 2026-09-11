@@ -21,7 +21,7 @@ proxies to.
 
 ### Featured Player: `selectionMode` (MANUAL / AUTO)
 
-`HomeFeaturedPlayerConfig.selectionMode` (`V9__home_featured_player_selection_mode.sql`,
+`HomeFeaturedPlayerConfig.selectionMode` (`V10__home_featured_player_selection_mode.sql`,
 `NOT NULL DEFAULT 'MANUAL'` — existing rows backfill to MANUAL, so no live
 configuration changes behavior) is a **policy flag only**:
 
