@@ -62,6 +62,7 @@ public class HomeFeaturedPlayerConfigJpaEntity {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
+    // Required by JPA/Hibernate to instantiate the entity via reflection.
     public HomeFeaturedPlayerConfigJpaEntity() {}
 
     public UUID getId()                            { return id; }

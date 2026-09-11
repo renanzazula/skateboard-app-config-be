@@ -84,10 +84,12 @@ class UpdateHomeFeaturedPlayerConfigServiceTest {
         HomeFeaturedPlayerConfig config = HomeFeaturedPlayerConfig.createDefaults();
         when(loadHomeFeaturedPlayerConfigPort.getOrCreate()).thenReturn(config);
 
-        assertThatThrownBy(() -> service.execute(new UpdateHomeFeaturedPlayerConfigUseCase.Command(
+        UpdateHomeFeaturedPlayerConfigUseCase.Command command = new UpdateHomeFeaturedPlayerConfigUseCase.Command(
                 "admin-1", true, null, null,
                 HomeFeaturedPlayerConfig.PlayerType.MINI, HomeFeaturedPlayerConfig.Position.BOTTOM, null,
-                HomeFeaturedPlayerConfig.SelectionMode.MANUAL)))
+                HomeFeaturedPlayerConfig.SelectionMode.MANUAL);
+
+        assertThatThrownBy(() -> service.execute(command))
                 .isInstanceOf(IllegalArgumentException.class);
         verify(saveHomeFeaturedPlayerConfigPort, never()).save(any());
     }
@@ -129,10 +131,12 @@ class UpdateHomeFeaturedPlayerConfigServiceTest {
         HomeFeaturedPlayerConfig config = HomeFeaturedPlayerConfig.createDefaults();
         when(loadHomeFeaturedPlayerConfigPort.getOrCreate()).thenReturn(config);
 
-        assertThatThrownBy(() -> service.execute(new UpdateHomeFeaturedPlayerConfigUseCase.Command(
+        UpdateHomeFeaturedPlayerConfigUseCase.Command command = new UpdateHomeFeaturedPlayerConfigUseCase.Command(
                 "admin-1", true, null, null,
                 HomeFeaturedPlayerConfig.PlayerType.MINI, HomeFeaturedPlayerConfig.Position.TOP, null,
-                HomeFeaturedPlayerConfig.SelectionMode.AUTO)))
+                HomeFeaturedPlayerConfig.SelectionMode.AUTO);
+
+        assertThatThrownBy(() -> service.execute(command))
                 .isInstanceOf(IllegalArgumentException.class);
         verify(saveHomeFeaturedPlayerConfigPort, never()).save(any());
     }

@@ -69,7 +69,7 @@ public class CampaignPersistenceAdapter implements CampaignRepositoryPort {
 
     @Override
     public List<Campaign> findAll() {
-        return jpaRepository.findAll().stream().map(this::toDomain).collect(Collectors.toList());
+        return jpaRepository.findAll().stream().map(this::toDomain).toList();
     }
 
     @Override
@@ -79,7 +79,7 @@ public class CampaignPersistenceAdapter implements CampaignRepositoryPort {
                 : List.of(CampaignAudience.ALL, CampaignAudience.ANONYMOUS);
         return jpaRepository.findEligible(CampaignStatus.PUBLISHED, now, audiences).stream()
                 .map(this::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -165,7 +165,7 @@ public class CampaignPersistenceAdapter implements CampaignRepositoryPort {
     private Campaign toDomain(CampaignJpaEntity entity) {
         List<CampaignScreen> screens = entity.getScreens().stream()
                 .map(this::toScreenDomain)
-                .collect(Collectors.toList());
+                .toList();
         return Campaign.reconstitute(entity.getId(), entity.getName(), entity.getDescription(), entity.getStatus(),
                 entity.getStartAt(), entity.getEndAt(), entity.getPriority(), entity.getAudience(),
                 entity.getFrequencyType(), entity.getMaxDisplaysPerDay(), screens, entity.getCreatedBy(),

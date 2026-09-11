@@ -46,6 +46,7 @@ public class CampaignEventJpaEntity {
     @Column(name = "action_target", length = 2048)
     private String actionTarget;
 
+    // Required by JPA/Hibernate to instantiate the entity via reflection.
     public CampaignEventJpaEntity() {}
 
     public UUID getId()                     { return id; }

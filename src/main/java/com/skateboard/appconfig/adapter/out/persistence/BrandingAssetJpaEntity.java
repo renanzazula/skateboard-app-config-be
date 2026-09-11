@@ -36,6 +36,7 @@ public class BrandingAssetJpaEntity {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
+    // Required by JPA/Hibernate to instantiate the entity via reflection.
     public BrandingAssetJpaEntity() {}
 
     public UUID getId()            { return id; }

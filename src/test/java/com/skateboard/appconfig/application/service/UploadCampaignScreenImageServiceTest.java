@@ -56,8 +56,9 @@ class UploadCampaignScreenImageServiceTest {
         UUID screenId = campaign.getScreens().get(0).getId();
         when(campaignRepositoryPort.findById(campaign.getId())).thenReturn(Optional.of(campaign));
 
-        assertThatThrownBy(() -> service.execute(new UploadCampaignScreenImageUseCase.Command(
-                "a", campaign.getId(), screenId, new byte[]{1}, "image/gif", null, null)))
+        UploadCampaignScreenImageUseCase.Command command = new UploadCampaignScreenImageUseCase.Command(
+                "a", campaign.getId(), screenId, new byte[]{1}, "image/gif", null, null);
+        assertThatThrownBy(() -> service.execute(command))
                 .isInstanceOf(IllegalArgumentException.class);
         verify(objectStoragePort, never()).put(any(), any(), any());
     }
@@ -67,8 +68,9 @@ class UploadCampaignScreenImageServiceTest {
         Campaign campaign = campaignWithOneScreen();
         when(campaignRepositoryPort.findById(campaign.getId())).thenReturn(Optional.of(campaign));
 
-        assertThatThrownBy(() -> service.execute(new UploadCampaignScreenImageUseCase.Command(
-                "a", campaign.getId(), UUID.randomUUID(), new byte[]{1, 2}, "image/webp", null, null)))
+        UploadCampaignScreenImageUseCase.Command command = new UploadCampaignScreenImageUseCase.Command(
+                "a", campaign.getId(), UUID.randomUUID(), new byte[]{1, 2}, "image/webp", null, null);
+        assertThatThrownBy(() -> service.execute(command))
                 .isInstanceOf(CampaignScreenNotFoundException.class);
         verify(objectStoragePort, never()).put(any(), any(), any());
     }

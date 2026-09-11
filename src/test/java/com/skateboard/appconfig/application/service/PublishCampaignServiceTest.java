@@ -42,7 +42,8 @@ class PublishCampaignServiceTest {
         UUID id = UUID.randomUUID();
         when(campaignRepositoryPort.findById(id)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> service.execute(new PublishCampaignUseCase.Command("a", id)))
+        PublishCampaignUseCase.Command command = new PublishCampaignUseCase.Command("a", id);
+        assertThatThrownBy(() -> service.execute(command))
                 .isInstanceOf(CampaignNotFoundException.class);
     }
 

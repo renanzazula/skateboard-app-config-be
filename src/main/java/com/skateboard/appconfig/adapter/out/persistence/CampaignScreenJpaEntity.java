@@ -93,6 +93,7 @@ public class CampaignScreenJpaEntity {
     @Column(name = "action_target", length = 2048)
     private String actionTarget;
 
+    // Required by JPA/Hibernate to instantiate the entity via reflection.
     public CampaignScreenJpaEntity() {}
 
     public UUID getId()                             { return id; }

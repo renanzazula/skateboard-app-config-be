@@ -36,24 +36,27 @@ class CampaignMediaAssetTest {
 
     @Test
     void rejectsBlankStorageKey() {
-        assertThatThrownBy(() -> CampaignMediaAsset.create(UUID.randomUUID(), 1, "  ", "image/webp",
+        UUID id = UUID.randomUUID();
+        assertThatThrownBy(() -> CampaignMediaAsset.create(id, 1, "  ", "image/webp",
                 null, null, null, null, null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void rejectsNonPositiveVersion() {
-        assertThatThrownBy(() -> CampaignMediaAsset.create(UUID.randomUUID(), 0, "campaigns/c1/s1.webp",
+        UUID id = UUID.randomUUID();
+        assertThatThrownBy(() -> CampaignMediaAsset.create(id, 0, "campaigns/c1/s1.webp",
                 "image/webp", null, null, null, null, null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void rejectsFocalPointOutsideUnitInterval() {
-        assertThatThrownBy(() -> CampaignMediaAsset.create(UUID.randomUUID(), 1, "campaigns/c1/s1.webp",
+        UUID id = UUID.randomUUID();
+        assertThatThrownBy(() -> CampaignMediaAsset.create(id, 1, "campaigns/c1/s1.webp",
                 "image/webp", null, null, null, 1.2, 0.5))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> CampaignMediaAsset.create(UUID.randomUUID(), 1, "campaigns/c1/s1.webp",
+        assertThatThrownBy(() -> CampaignMediaAsset.create(id, 1, "campaigns/c1/s1.webp",
                 "image/webp", null, null, null, 0.5, -0.1))
                 .isInstanceOf(IllegalArgumentException.class);
     }

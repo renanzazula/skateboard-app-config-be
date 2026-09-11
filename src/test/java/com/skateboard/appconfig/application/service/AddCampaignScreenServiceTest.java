@@ -47,7 +47,8 @@ class AddCampaignScreenServiceTest {
         UUID id = UUID.randomUUID();
         when(campaignRepositoryPort.findById(id)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> service.execute(new AddCampaignScreenUseCase.Command("a", id, draft())))
+        AddCampaignScreenUseCase.Command command = new AddCampaignScreenUseCase.Command("a", id, draft());
+        assertThatThrownBy(() -> service.execute(command))
                 .isInstanceOf(CampaignNotFoundException.class);
     }
 

@@ -85,6 +85,7 @@ public class CampaignJpaEntity {
     @OrderBy("position ASC")
     private List<CampaignScreenJpaEntity> screens = new ArrayList<>();
 
+    // Required by JPA/Hibernate to instantiate the entity via reflection.
     public CampaignJpaEntity() {}
 
     public UUID getId()                             { return id; }
