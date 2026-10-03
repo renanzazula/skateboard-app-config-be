@@ -61,6 +61,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/config").permitAll()
+                        // The published Privacy Policy must be reachable by app
+                        // reviewers and signed-out users with no JWT at all — the
+                        // App Store / Play Store listing links to it directly.
+                        // Unlike About Us's GET, this is not just "no specific
+                        // FUNC_* authority" — it bypasses authentication entirely.
+                        .requestMatchers(HttpMethod.GET, "/api/privacy-policy").permitAll()
                         // Startup campaigns must resolve before login (ANONYMOUS/ALL
                         // audiences); the analytics ping likewise has no auth so a
                         // signed-out session can still report events.
