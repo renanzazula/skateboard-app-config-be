@@ -2,9 +2,6 @@ package com.skateboard.appconfig.application.port.in;
 
 import com.skateboard.appconfig.domain.model.AppConfig;
 
-import java.util.Arrays;
-import java.util.Objects;
-
 public interface UploadAppLogoUseCase {
 
     record Command(String adminId, byte[] data, String mimeType) {
@@ -13,21 +10,17 @@ public interface UploadAppLogoUseCase {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (!(o instanceof Command other)) return false;
-            return Objects.equals(adminId, other.adminId)
-                    && Arrays.equals(data, other.data)
-                    && Objects.equals(mimeType, other.mimeType);
+            return ImageUploadCommandSupport.equals(adminId, data, mimeType, other.adminId, other.data, other.mimeType);
         }
 
         @Override
         public int hashCode() {
-            int result = Objects.hash(adminId, mimeType);
-            return 31 * result + Arrays.hashCode(data);
+            return ImageUploadCommandSupport.hashCode(adminId, data, mimeType);
         }
 
         @Override
         public String toString() {
-            return "Command[adminId=" + adminId + ", data=byte[" + (data == null ? 0 : data.length)
-                    + "], mimeType=" + mimeType + "]";
+            return ImageUploadCommandSupport.toString("Command", adminId, data, mimeType);
         }
     }
 
