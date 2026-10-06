@@ -22,12 +22,13 @@ class CommandRecordsEqualityTest {
         UploadAboutImageUseCase.Command differentData = new UploadAboutImageUseCase.Command(new byte[]{9}, "image/png");
         UploadAboutImageUseCase.Command differentMime = new UploadAboutImageUseCase.Command(new byte[]{1, 2}, "image/webp");
 
-        assertThat(a).isEqualTo(a);
+        assertThat(a).isSameAs(a);
         assertThat(a).isEqualTo(same);
         assertThat(a).hasSameHashCodeAs(same);
         assertThat(a).isNotEqualTo(differentData);
         assertThat(a).isNotEqualTo(differentMime);
-        assertThat(a).isNotEqualTo("not a command");
+        Object notACommand = "not a command";
+        assertThat(a).isNotEqualTo(notACommand);
         assertThat(a.toString()).contains("data=byte[2]").contains("mimeType=image/png");
         assertThat(new UploadAboutImageUseCase.Command(null, null).toString()).contains("data=byte[0]");
     }
@@ -38,7 +39,7 @@ class CommandRecordsEqualityTest {
         UploadAppLogoUseCase.Command same = new UploadAppLogoUseCase.Command("admin-1", new byte[]{1, 2}, "image/png");
         UploadAppLogoUseCase.Command differentAdmin = new UploadAppLogoUseCase.Command("admin-2", new byte[]{1, 2}, "image/png");
 
-        assertThat(a).isEqualTo(a);
+        assertThat(a).isSameAs(a);
         assertThat(a).isEqualTo(same);
         assertThat(a).hasSameHashCodeAs(same);
         assertThat(a).isNotEqualTo(differentAdmin);
@@ -52,7 +53,7 @@ class CommandRecordsEqualityTest {
         UploadLoginBackgroundUseCase.Command same = new UploadLoginBackgroundUseCase.Command("admin-1", new byte[]{1}, "image/png");
         UploadLoginBackgroundUseCase.Command different = new UploadLoginBackgroundUseCase.Command("admin-1", new byte[]{2}, "image/png");
 
-        assertThat(a).isEqualTo(a);
+        assertThat(a).isSameAs(a);
         assertThat(a).isEqualTo(same);
         assertThat(a).hasSameHashCodeAs(same);
         assertThat(a).isNotEqualTo(different);
@@ -65,7 +66,7 @@ class CommandRecordsEqualityTest {
         UploadBrandingAssetUseCase.Command same = new UploadBrandingAssetUseCase.Command("admin-1", "home-header", new byte[]{1}, "image/png");
         UploadBrandingAssetUseCase.Command differentName = new UploadBrandingAssetUseCase.Command("admin-1", "other", new byte[]{1}, "image/png");
 
-        assertThat(a).isEqualTo(a);
+        assertThat(a).isSameAs(a);
         assertThat(a).isEqualTo(same);
         assertThat(a).hasSameHashCodeAs(same);
         assertThat(a).isNotEqualTo(differentName);
@@ -79,7 +80,7 @@ class CommandRecordsEqualityTest {
         ReplaceBrandingAssetUseCase.Command same = new ReplaceBrandingAssetUseCase.Command("admin-1", assetId, new byte[]{1}, "image/png");
         ReplaceBrandingAssetUseCase.Command differentId = new ReplaceBrandingAssetUseCase.Command("admin-1", UUID.randomUUID(), new byte[]{1}, "image/png");
 
-        assertThat(a).isEqualTo(a);
+        assertThat(a).isSameAs(a);
         assertThat(a).isEqualTo(same);
         assertThat(a).hasSameHashCodeAs(same);
         assertThat(a).isNotEqualTo(differentId);
@@ -97,7 +98,7 @@ class CommandRecordsEqualityTest {
         UploadCampaignScreenImageUseCase.Command differentFocal = new UploadCampaignScreenImageUseCase.Command(
                 "admin-1", campaignId, screenId, new byte[]{1}, "image/png", 0.1, 0.9);
 
-        assertThat(a).isEqualTo(a);
+        assertThat(a).isSameAs(a);
         assertThat(a).isEqualTo(same);
         assertThat(a).hasSameHashCodeAs(same);
         assertThat(a).isNotEqualTo(differentFocal);
