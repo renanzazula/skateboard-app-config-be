@@ -34,7 +34,7 @@ public class GuestApplicationConfigPersistenceAdapter implements LoadGuestApplic
 
     private GuestApplicationConfig toDomain(GuestApplicationConfigJpaEntity e) {
         return GuestApplicationConfig.reconstitute(e.getId(), e.isEnabled(), e.getRecipientIds(),
-                e.getConfirmationSubject(), e.getConfirmationBody(), e.getCreatedAt(), e.getUpdatedAt(), e.getUpdatedBy());
+                e.getCreatedAt(), e.getUpdatedAt(), e.getUpdatedBy());
     }
 
     private GuestApplicationConfigJpaEntity toEntity(GuestApplicationConfig config) {
@@ -46,8 +46,6 @@ public class GuestApplicationConfigPersistenceAdapter implements LoadGuestApplic
         e.setId(config.getId());
         e.setEnabled(config.isEnabled());
         e.setRecipientIds(new LinkedHashSet<>(config.getRecipientIds()));
-        e.setConfirmationSubject(config.getConfirmationSubject());
-        e.setConfirmationBody(config.getConfirmationBody());
         e.setUpdatedBy(config.getUpdatedBy());
         // Copies the domain's own updatedAt (null until update() runs)
         // rather than stamping now() — the default-creation save on first

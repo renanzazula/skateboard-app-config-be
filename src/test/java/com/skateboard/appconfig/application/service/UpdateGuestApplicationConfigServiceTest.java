@@ -43,7 +43,7 @@ class UpdateGuestApplicationConfigServiceTest {
         when(saveGuestApplicationConfigPort.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         GuestApplicationConfig updated = service.execute(new UpdateGuestApplicationConfigUseCase.Command(
-                "admin-1", true, Set.of(recipient), "Subject", "Body"));
+                "admin-1", true, Set.of(recipient)));
 
         assertThat(updated.isEnabled()).isTrue();
         assertThat(updated.getRecipientIds()).containsExactly(recipient);
@@ -56,7 +56,7 @@ class UpdateGuestApplicationConfigServiceTest {
         when(loadGuestApplicationConfigPort.getOrCreate()).thenReturn(config);
 
         UpdateGuestApplicationConfigUseCase.Command command = new UpdateGuestApplicationConfigUseCase.Command(
-                "admin-1", true, Set.of(), "Subject", "Body");
+                "admin-1", true, Set.of());
 
         assertThatThrownBy(() -> service.execute(command)).isInstanceOf(IllegalArgumentException.class);
         verify(saveGuestApplicationConfigPort, never()).save(any());

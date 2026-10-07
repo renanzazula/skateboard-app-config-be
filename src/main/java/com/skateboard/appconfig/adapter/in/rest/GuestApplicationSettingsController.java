@@ -60,9 +60,7 @@ public class GuestApplicationSettingsController implements GuestApplicationSetti
                 new UpdateGuestApplicationConfigUseCase.Command(
                         currentAdminId(),
                         Boolean.TRUE.equals(request.getEnabled()),
-                        toRecipientIds(request.getRecipientIds()),
-                        request.getConfirmationSubject(),
-                        request.getConfirmationBody()));
+                        toRecipientIds(request.getRecipientIds())));
         return ResponseEntity.ok(toResponse(updated));
     }
 
@@ -70,8 +68,6 @@ public class GuestApplicationSettingsController implements GuestApplicationSetti
         return new GuestApplicationSettingsResponse()
                 .enabled(config.isEnabled())
                 .recipientIds(List.copyOf(config.getRecipientIds()))
-                .confirmationSubject(config.getConfirmationSubject())
-                .confirmationBody(config.getConfirmationBody())
                 .updatedAt(toOffsetDateTime(config.getUpdatedAt()))
                 .updatedBy(config.getUpdatedBy());
     }

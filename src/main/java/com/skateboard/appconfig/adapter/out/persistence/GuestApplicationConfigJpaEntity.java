@@ -29,12 +29,6 @@ public class GuestApplicationConfigJpaEntity {
     @Column(name = "recipient_id")
     private Set<UUID> recipientIds = new LinkedHashSet<>();
 
-    @Column(name = "confirmation_subject", nullable = false)
-    private String confirmationSubject;
-
-    @Column(name = "confirmation_body", nullable = false)
-    private String confirmationBody;
-
     @Column(name = "updated_by")
     private String updatedBy;
 
@@ -53,8 +47,6 @@ public class GuestApplicationConfigJpaEntity {
     public UUID getId()                     { return id; }
     public boolean isEnabled()               { return enabled; }
     public Set<UUID> getRecipientIds()       { return recipientIds; }
-    public String getConfirmationSubject()   { return confirmationSubject; }
-    public String getConfirmationBody()      { return confirmationBody; }
     public String getUpdatedBy()             { return updatedBy; }
     public Instant getCreatedAt()            { return createdAt; }
     public Instant getUpdatedAt()            { return updatedAt; }
@@ -62,8 +54,6 @@ public class GuestApplicationConfigJpaEntity {
     public void setId(UUID id)                           { this.id = id; }
     public void setEnabled(boolean v)                     { this.enabled = v; }
     public void setRecipientIds(Set<UUID> v)              { this.recipientIds = v; }
-    public void setConfirmationSubject(String v)          { this.confirmationSubject = v; }
-    public void setConfirmationBody(String v)             { this.confirmationBody = v; }
     public void setUpdatedBy(String v)                    { this.updatedBy = v; }
     public void setCreatedAt(Instant v)                   { this.createdAt = v; }
     public void setUpdatedAt(Instant v)                   { this.updatedAt = v; }
