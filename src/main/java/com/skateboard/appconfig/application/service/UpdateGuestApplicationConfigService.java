@@ -23,8 +23,7 @@ public class UpdateGuestApplicationConfigService implements UpdateGuestApplicati
     @Transactional
     public GuestApplicationConfig execute(Command command) {
         GuestApplicationConfig config = loadGuestApplicationConfigPort.getOrCreate();
-        config.update(command.enabled(), command.recipientIds(), command.confirmationSubject(),
-                command.confirmationBody(), command.adminId());
+        config.update(command.enabled(), command.recipientIds(), command.adminId());
         return saveGuestApplicationConfigPort.save(config);
     }
 }

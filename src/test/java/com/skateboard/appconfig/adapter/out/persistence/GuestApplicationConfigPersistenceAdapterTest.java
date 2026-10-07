@@ -46,7 +46,6 @@ class GuestApplicationConfigPersistenceAdapterTest {
         assertThat(config.getId()).isNotNull();
         assertThat(config.isEnabled()).isFalse();
         assertThat(config.getRecipientIds()).isEmpty();
-        assertThat(config.getConfirmationSubject()).isEqualTo(GuestApplicationConfig.DEFAULT_CONFIRMATION_SUBJECT);
     }
 
     @Test
@@ -56,8 +55,6 @@ class GuestApplicationConfigPersistenceAdapterTest {
         entity.setId(UUID.randomUUID());
         entity.setEnabled(true);
         entity.setRecipientIds(Set.of(recipient));
-        entity.setConfirmationSubject("Subject");
-        entity.setConfirmationBody("Body");
         entity.setUpdatedBy("admin-1");
         when(jpaRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(List.of(entity)));
 
@@ -66,8 +63,6 @@ class GuestApplicationConfigPersistenceAdapterTest {
         assertThat(config.getId()).isEqualTo(entity.getId());
         assertThat(config.isEnabled()).isTrue();
         assertThat(config.getRecipientIds()).containsExactly(recipient);
-        assertThat(config.getConfirmationSubject()).isEqualTo("Subject");
-        assertThat(config.getConfirmationBody()).isEqualTo("Body");
         assertThat(config.getUpdatedBy()).isEqualTo("admin-1");
     }
 
@@ -75,7 +70,7 @@ class GuestApplicationConfigPersistenceAdapterTest {
     void savingAnExistingRowReusesTheEntityAndSkipsCreatedAt() {
         UUID recipient = UUID.randomUUID();
         GuestApplicationConfig config = GuestApplicationConfig.createDefaults();
-        config.update(true, Set.of(recipient), "Subject", "Body", "admin-2");
+        config.update(true, Set.of(recipient), "admin-2");
 
         GuestApplicationConfigJpaEntity existing = new GuestApplicationConfigJpaEntity();
         existing.setId(config.getId());

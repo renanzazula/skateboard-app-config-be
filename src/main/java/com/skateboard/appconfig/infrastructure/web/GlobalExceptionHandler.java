@@ -5,6 +5,7 @@ import com.skateboard.appconfig.domain.exception.BrandingAssetNotFoundException;
 import com.skateboard.appconfig.domain.exception.CampaignInvalidStateTransitionException;
 import com.skateboard.appconfig.domain.exception.CampaignNotFoundException;
 import com.skateboard.appconfig.domain.exception.CampaignScreenLimitExceededException;
+import com.skateboard.appconfig.domain.exception.EmailTemplateNotFoundException;
 import com.skateboard.appconfig.infrastructure.web.dto.ErrorResponse;
 
 import org.slf4j.Logger;
@@ -39,6 +40,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BrandingAssetNameConflictException.class)
     public ResponseEntity<ErrorResponse> handleBrandingAssetNameConflict(BrandingAssetNameConflictException ex) {
         return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(EmailTemplateNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEmailTemplateNotFound(EmailTemplateNotFoundException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
